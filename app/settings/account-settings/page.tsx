@@ -2,8 +2,61 @@ import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { UserCircle, Shield, Key, Camera, Mail, Phone } from "lucide-react"
+import { useSchoolStore } from "@/lib/store"
+import { useState, useEffect } from "react"
+import { toast } from "sonner"
 
 export default function AccountSettingsPage() {
+  const { accountSetting, updateAccountSetting } = useSchoolStore()
+  const [mounted, setMounted] = useState(false)
+  const [localState, setLocalState] = useState(accountSetting)
+
+  const [passwords, setPasswords] = useState({
+    current: '',
+    newPass: '',
+    confirmPass: ''
+  })
+
+  useEffect(() => {
+    setMounted(true)
+    setLocalState(accountSetting)
+  }, [accountSetting])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setLocalState(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setPasswords(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSaveProfile = () => {
+    if (!localState.fullName || !localState.email) {
+      toast.error("Name and Email are required!")
+      return
+    }
+    updateAccountSetting(localState)
+    toast.success("Profile updated successfully!")
+  }
+
+  const handleUpdatePassword = () => {
+    if (!passwords.current || !passwords.newPass || !passwords.confirmPass) {
+      toast.error("Please fill all password fields!")
+      return
+    }
+    if (passwords.newPass !== passwords.confirmPass) {
+      toast.error("New passwords do not match!")
+      return
+    }
+    // Mock password update
+    toast.success("Password updated successfully!")
+    setPasswords({ current: '', newPass: '', confirmPass: '' })
+  }
+
+  if (!mounted) return null
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -46,24 +99,24 @@ export default function AccountSettingsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2 sm:col-span-2">
                       <label className="text-sm font-medium text-foreground">সম্পূর্ণ নাম</label>
-                      <Input placeholder="আপনার নাম" defaultValue="Super Admin" />
+                      <Input name="fullName" value={localState.fullName} onChange={handleChange} placeholder="আপনার নাম" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground flex items-center gap-2">
                         <Phone className="w-4 h-4 text-muted-foreground" />
                         ফোন নম্বর
                       </label>
-                      <Input placeholder="+880 1..." defaultValue="+880 1711-000000" />
+                      <Input name="phone" value={localState.phone} onChange={handleChange} placeholder="+880 1..." />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground flex items-center gap-2">
                         <Mail className="w-4 h-4 text-muted-foreground" />
                         ইমেইল এড্রেস
                       </label>
-                      <Input type="email" placeholder="admin@example.com" defaultValue="admin@ghjs.edu.bd" />
+                      <Input name="email" type="email" value={localState.email} onChange={handleChange} placeholder="admin@example.com" />
                     </div>
                   </div>
-                  <Button className="mt-4">প্রোফাইল সেভ করুন</Button>
+                  <Button className="mt-4" onClick={handleSaveProfile}>প্রোফাইল সেভ করুন</Button>
                 </div>
               </div>
             </div>
@@ -88,23 +141,23 @@ export default function AccountSettingsPage() {
                     <Key className="w-4 h-4 text-muted-foreground" />
                     বর্তমান পাসওয়ার্ড
                   </label>
-                  <Input type="password" placeholder="••••••••" />
+                  <Input name="current" type="password" value={passwords.current} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground flex items-center gap-2">
                     <Key className="w-4 h-4 text-muted-foreground" />
                     নতুন পাসওয়ার্ড
                   </label>
-                  <Input type="password" placeholder="••••••••" />
+                  <Input name="newPass" type="password" value={passwords.newPass} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground flex items-center gap-2">
                     <Key className="w-4 h-4 text-muted-foreground" />
                     পাসওয়ার্ড নিশ্চিত করুন
                   </label>
-                  <Input type="password" placeholder="••••••••" />
+                  <Input name="confirmPass" type="password" value={passwords.confirmPass} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
-                <Button className="w-full mt-4" variant="default">পাসওয়ার্ড আপডেট করুন</Button>
+                <Button className="w-full mt-4" variant="default" onClick={handleUpdatePassword}>পাসওয়ার্ড আপডেট করুন</Button>
               </div>
             </div>
           </div>

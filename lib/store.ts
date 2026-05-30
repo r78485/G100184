@@ -165,6 +165,81 @@ export interface Notice {
   isPublic: boolean
 }
 
+// General Settings Types
+export interface InstituteProfile {
+  name: string
+  eiin: string
+  establishedYear: string
+  principalName: string
+  phone: string
+  email: string
+  website: string
+  address: string
+  logo: string
+}
+
+export interface FeeParticular {
+  id: string
+  name: string
+  description: string
+  status: 'Active' | 'Inactive'
+}
+
+export interface FeeStructure {
+  id: string
+  classId: string
+  feeParticularId: string
+  amount: number
+  frequency: string
+  status: 'Active' | 'Inactive'
+}
+
+export interface AccountSetting {
+  fullName: string
+  phone: string
+  email: string
+  avatar: string
+}
+
+export interface DiscountType {
+  id: string
+  name: string
+  type: string
+  amount: number
+  status: 'Active' | 'Inactive'
+}
+
+export interface AccountForFee {
+  id: string
+  name: string
+  type: string
+  number: string
+  details: string
+  status: 'Active' | 'Inactive'
+}
+
+export interface RuleRegulation {
+  id: string
+  title: string
+  category: string
+  content: string
+  status: 'Published' | 'Draft'
+}
+
+export interface MarksGrading {
+  id: string
+  grade: string
+  point: number
+  minMark: number
+  maxMark: number
+  remarks: string
+}
+
+export interface ThemeLanguage {
+  theme: 'light' | 'dark'
+  language: 'bn' | 'en'
+}
+
 // Sample Data
 const sampleStudents: Student[] = [
   {
@@ -324,6 +399,57 @@ const sampleQuestions: Question[] = [
   }
 ]
 
+// Settings Sample Data
+const initialInstituteProfile: InstituteProfile = {
+  name: "GHJS High School",
+  eiin: "123456",
+  establishedYear: "1995",
+  principalName: "মোঃ আব্দুর রহমান",
+  phone: "+880 1711-123456",
+  email: "info@ghjs.edu.bd",
+  website: "https://www.ghjs.edu.bd",
+  address: "স্কুল রোড, ধানমন্ডি, ঢাকা, বাংলাদেশ",
+  logo: ""
+}
+
+const initialFeeParticulars: FeeParticular[] = [
+  { id: '1', name: "Tuition Fee", description: "Monthly tuition fee", status: "Active" },
+  { id: '2', name: "Admission Fee", description: "One-time admission fee", status: "Active" },
+]
+
+const initialAccountSetting: AccountSetting = {
+  fullName: "Super Admin",
+  phone: "+880 1711-000000",
+  email: "admin@ghjs.edu.bd",
+  avatar: ""
+}
+
+const initialDiscountTypes: DiscountType[] = [
+  { id: '1', name: "Siblings Discount", type: "Percentage", amount: 50, status: "Active" },
+  { id: '2', name: "Merit Scholarship", type: "Percentage", amount: 100, status: "Active" },
+  { id: '3', name: "Employee Child", type: "Fixed Amount", amount: 500, status: "Active" }
+]
+
+const initialAccountsForFees: AccountForFee[] = [
+  { id: '1', name: "Main Bank Account", type: "Bank Account", number: "192.100.83849", details: "DBBL, Main Branch", status: "Active" },
+  { id: '2', name: "School bKash Agent", type: "Mobile Banking (bKash/Nagad)", number: "+880 1711-000000", details: "Merchant Account", status: "Active" }
+]
+
+const initialRulesRegulations: RuleRegulation[] = [
+  { id: '1', title: "উপস্থিতি (Attendance)", category: "Attendance", content: "শিক্ষার্থীদের অবশ্যই সকাল ৮:০০ টার মধ্যে স্কুলে উপস্থিত হতে হবে।", status: "Published" },
+  { id: '2', title: "স্কুল ইউনিফর্ম (School Uniform)", category: "Uniform", content: "সকল শিক্ষার্থীকে নির্ধারিত স্কুল ইউনিফর্ম পরিধান করতে হবে।", status: "Published" }
+]
+
+const initialMarksGradings: MarksGrading[] = [
+  { id: '1', grade: "A+", point: 5.0, minMark: 80, maxMark: 100, remarks: "Excellent" },
+  { id: '2', grade: "A", point: 4.0, minMark: 70, maxMark: 79, remarks: "Good" },
+  { id: '3', grade: "A-", point: 3.5, minMark: 60, maxMark: 69, remarks: "Satisfactory" },
+  { id: '4', grade: "B", point: 3.0, minMark: 50, maxMark: 59, remarks: "Average" },
+  { id: '5', grade: "C", point: 2.0, minMark: 40, maxMark: 49, remarks: "Below Average" },
+  { id: '6', grade: "D", point: 1.0, minMark: 33, maxMark: 39, remarks: "Pass" },
+  { id: '7', grade: "F", point: 0.0, minMark: 0, maxMark: 32, remarks: "Fail" }
+]
+
 interface SchoolStore {
   // Data
   students: Student[]
@@ -339,6 +465,17 @@ interface SchoolStore {
   results: Result[]
   certificates: Certificate[]
   notices: Notice[]
+  
+  // General Settings
+  instituteProfile: InstituteProfile
+  feeParticulars: FeeParticular[]
+  feeStructures: FeeStructure[]
+  discountTypes: DiscountType[]
+  accountsForFees: AccountForFee[]
+  rulesRegulations: RuleRegulation[]
+  marksGradings: MarksGrading[]
+  themeLanguage: ThemeLanguage
+  accountSetting: AccountSetting
   
   // Student Actions
   addStudent: (student: Omit<Student, 'id' | 'createdAt'>) => void
@@ -399,6 +536,37 @@ interface SchoolStore {
   addNotice: (notice: Omit<Notice, 'id'>) => void
   updateNotice: (id: string, notice: Partial<Notice>) => void
   deleteNotice: (id: string) => void
+
+  // General Settings Actions
+  updateInstituteProfile: (profile: Partial<InstituteProfile>) => void
+  
+  addFeeParticular: (particular: Omit<FeeParticular, 'id'>) => void
+  updateFeeParticular: (id: string, particular: Partial<FeeParticular>) => void
+  deleteFeeParticular: (id: string) => void
+  
+  addFeeStructure: (structure: Omit<FeeStructure, 'id'>) => void
+  updateFeeStructure: (id: string, structure: Partial<FeeStructure>) => void
+  deleteFeeStructure: (id: string) => void
+  
+  addDiscountType: (discount: Omit<DiscountType, 'id'>) => void
+  updateDiscountType: (id: string, discount: Partial<DiscountType>) => void
+  deleteDiscountType: (id: string) => void
+  
+  addAccountForFee: (account: Omit<AccountForFee, 'id'>) => void
+  updateAccountForFee: (id: string, account: Partial<AccountForFee>) => void
+  deleteAccountForFee: (id: string) => void
+  
+  updateAccountSetting: (setting: Partial<AccountSetting>) => void
+  
+  addRuleRegulation: (rule: Omit<RuleRegulation, 'id'>) => void
+  updateRuleRegulation: (id: string, rule: Partial<RuleRegulation>) => void
+  deleteRuleRegulation: (id: string) => void
+  
+  addMarksGrading: (grading: Omit<MarksGrading, 'id'>) => void
+  updateMarksGrading: (id: string, grading: Partial<MarksGrading>) => void
+  deleteMarksGrading: (id: string) => void
+  
+  updateThemeLanguage: (themeLang: Partial<ThemeLanguage>) => void
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9)
@@ -420,6 +588,17 @@ export const useSchoolStore = create<SchoolStore>()(
       results: [],
       certificates: [],
       notices: [],
+      
+      // General Settings Initial Data
+      instituteProfile: initialInstituteProfile,
+      feeParticulars: initialFeeParticulars,
+      feeStructures: [],
+      discountTypes: initialDiscountTypes,
+      accountsForFees: initialAccountsForFees,
+      rulesRegulations: initialRulesRegulations,
+      marksGradings: initialMarksGradings,
+      themeLanguage: { theme: 'light', language: 'bn' },
+      accountSetting: initialAccountSetting,
       
       // Student Actions
       addStudent: (student) => set((state) => ({
@@ -554,6 +733,79 @@ export const useSchoolStore = create<SchoolStore>()(
       })),
       deleteNotice: (id) => set((state) => ({
         notices: state.notices.filter((n) => n.id !== id)
+      })),
+      
+      // General Settings Actions
+      updateInstituteProfile: (profile) => set((state) => ({
+        instituteProfile: { ...state.instituteProfile, ...profile }
+      })),
+      
+      addFeeParticular: (particular) => set((state) => ({
+        feeParticulars: [...state.feeParticulars, { ...particular, id: generateId() }]
+      })),
+      updateFeeParticular: (id, particular) => set((state) => ({
+        feeParticulars: state.feeParticulars.map(p => p.id === id ? { ...p, ...particular } : p)
+      })),
+      deleteFeeParticular: (id) => set((state) => ({
+        feeParticulars: state.feeParticulars.filter(p => p.id !== id)
+      })),
+      
+      addFeeStructure: (structure) => set((state) => ({
+        feeStructures: [...state.feeStructures, { ...structure, id: generateId() }]
+      })),
+      updateFeeStructure: (id, structure) => set((state) => ({
+        feeStructures: state.feeStructures.map(s => s.id === id ? { ...s, ...structure } : s)
+      })),
+      deleteFeeStructure: (id) => set((state) => ({
+        feeStructures: state.feeStructures.filter(s => s.id !== id)
+      })),
+      
+      addDiscountType: (discount) => set((state) => ({
+        discountTypes: [...state.discountTypes, { ...discount, id: generateId() }]
+      })),
+      updateDiscountType: (id, discount) => set((state) => ({
+        discountTypes: state.discountTypes.map(d => d.id === id ? { ...d, ...discount } : d)
+      })),
+      deleteDiscountType: (id) => set((state) => ({
+        discountTypes: state.discountTypes.filter(d => d.id !== id)
+      })),
+      
+      addAccountForFee: (account) => set((state) => ({
+        accountsForFees: [...state.accountsForFees, { ...account, id: generateId() }]
+      })),
+      updateAccountForFee: (id, account) => set((state) => ({
+        accountsForFees: state.accountsForFees.map(a => a.id === id ? { ...a, ...account } : a)
+      })),
+      deleteAccountForFee: (id) => set((state) => ({
+        accountsForFees: state.accountsForFees.filter(a => a.id !== id)
+      })),
+      
+      updateAccountSetting: (setting) => set((state) => ({
+        accountSetting: { ...state.accountSetting, ...setting }
+      })),
+      
+      addRuleRegulation: (rule) => set((state) => ({
+        rulesRegulations: [...state.rulesRegulations, { ...rule, id: generateId() }]
+      })),
+      updateRuleRegulation: (id, rule) => set((state) => ({
+        rulesRegulations: state.rulesRegulations.map(r => r.id === id ? { ...r, ...rule } : r)
+      })),
+      deleteRuleRegulation: (id) => set((state) => ({
+        rulesRegulations: state.rulesRegulations.filter(r => r.id !== id)
+      })),
+      
+      addMarksGrading: (grading) => set((state) => ({
+        marksGradings: [...state.marksGradings, { ...grading, id: generateId() }]
+      })),
+      updateMarksGrading: (id, grading) => set((state) => ({
+        marksGradings: state.marksGradings.map(g => g.id === id ? { ...g, ...grading } : g)
+      })),
+      deleteMarksGrading: (id) => set((state) => ({
+        marksGradings: state.marksGradings.filter(g => g.id !== id)
+      })),
+      
+      updateThemeLanguage: (themeLang) => set((state) => ({
+        themeLanguage: { ...state.themeLanguage, ...themeLang }
       })),
     }),
     {

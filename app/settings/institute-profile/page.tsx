@@ -1,9 +1,34 @@
 import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Building2, Save, Upload, Phone, Mail, Globe, MapPin, Hash, Calendar, UserRound } from "lucide-react"
+import { Building2, Save, Phone, Mail, Globe, MapPin, Hash, Calendar, UserRound } from "lucide-react"
+import { useSchoolStore } from "@/lib/store"
+import { useState, useEffect } from "react"
+import { toast } from "sonner"
 
 export default function InstituteProfilePage() {
+  const { instituteProfile, updateInstituteProfile } = useSchoolStore()
+  
+  const [formData, setFormData] = useState(instituteProfile)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    setFormData(instituteProfile)
+  }, [instituteProfile])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSave = () => {
+    updateInstituteProfile(formData)
+    toast.success("Institute profile saved successfully!")
+  }
+
+  if (!mounted) return null
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -40,28 +65,28 @@ export default function InstituteProfilePage() {
                       <Building2 className="w-4 h-4 text-muted-foreground" />
                       প্রতিষ্ঠানের নাম
                     </label>
-                    <Input placeholder="যেমন: ঢাকা জিলা স্কুল" defaultValue="GHJS High School" />
+                    <Input name="name" value={formData.name} onChange={handleChange} placeholder="যেমন: ঢাকা জিলা স্কুল" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Hash className="w-4 h-4 text-muted-foreground" />
                       ইআইআইএন (EIIN) / রেজিস্ট্রেশন নম্বর
                     </label>
-                    <Input placeholder="যেমন: 108162" defaultValue="123456" />
+                    <Input name="eiin" value={formData.eiin} onChange={handleChange} placeholder="যেমন: 108162" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-muted-foreground" />
                       প্রতিষ্ঠাকালীন বছর
                     </label>
-                    <Input type="number" placeholder="যেমন: 1995" defaultValue="1995" />
+                    <Input name="establishedYear" type="number" value={formData.establishedYear} onChange={handleChange} placeholder="যেমন: 1995" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <UserRound className="w-4 h-4 text-muted-foreground" />
                       অধ্যক্ষ / প্রধান শিক্ষকের নাম
                     </label>
-                    <Input placeholder="সম্পূর্ণ নাম লিখুন" defaultValue="মোঃ আব্দুর রহমান" />
+                    <Input name="principalName" value={formData.principalName} onChange={handleChange} placeholder="সম্পূর্ণ নাম লিখুন" />
                   </div>
                 </div>
               </div>
@@ -75,35 +100,35 @@ export default function InstituteProfilePage() {
                       <Phone className="w-4 h-4 text-muted-foreground" />
                       ফোন নম্বর
                     </label>
-                    <Input placeholder="যেমন: +880 1..." defaultValue="+880 1711-123456" />
+                    <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="যেমন: +880 1..." />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Mail className="w-4 h-4 text-muted-foreground" />
                       ইমেইল এড্রেস
                     </label>
-                    <Input type="email" placeholder="যেমন: info@school.edu.bd" defaultValue="info@ghjs.edu.bd" />
+                    <Input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="যেমন: info@school.edu.bd" />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Globe className="w-4 h-4 text-muted-foreground" />
                       ওয়েবসাইট
                     </label>
-                    <Input type="url" placeholder="যেমন: https://www.school.edu.bd" defaultValue="https://www.ghjs.edu.bd" />
+                    <Input name="website" type="url" value={formData.website} onChange={handleChange} placeholder="যেমন: https://www.school.edu.bd" />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       সম্পূর্ণ ঠিকানা
                     </label>
-                    <Input placeholder="যেমন: ১২৩, স্কুল রোড, ঢাকা" defaultValue="স্কুল রোড, ধানমন্ডি, ঢাকা, বাংলাদেশ" />
+                    <Input name="address" value={formData.address} onChange={handleChange} placeholder="যেমন: ১২৩, স্কুল রোড, ঢাকা" />
                   </div>
                 </div>
               </div>
 
               {/* Save Button */}
               <div className="pt-4 flex justify-end">
-                <Button className="gap-2 px-6">
+                <Button className="gap-2 px-6" onClick={handleSave}>
                   <Save className="w-4 h-4" />
                   সংরক্ষণ করুন
                 </Button>
