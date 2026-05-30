@@ -44,6 +44,7 @@ export interface Employee {
   address: string
   photo: string
   status: 'active' | 'inactive'
+  password?: string
   createdAt: string
 }
 

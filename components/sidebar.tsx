@@ -82,7 +82,18 @@ const menuItems = [
       { name: "Promote Student", href: "/students/promote", icon: TrendingUp },
     ]
   },
-  { name: "Employees", icon: UserCog, href: "/employees" },
+  { 
+    name: "Employees", 
+    icon: UserCog, 
+    href: "/employees",
+    subItems: [
+      { name: "All Employees", href: "/employees", icon: Users },
+      { name: "Add New", href: "/employees/add", icon: UserPlus },
+      { name: "Staff ID Cards", href: "/employees/id-cards", icon: IdCard },
+      { name: "Job Letter", href: "/employees/job-letter", icon: FileText },
+      { name: "Manage Login", href: "/employees/manage-login", icon: Key },
+    ]
+  },
   { name: "Accounts", icon: Wallet, href: "/accounts" },
   { name: "Fees", icon: Receipt, href: "/fees" },
   { name: "Salary", icon: Banknote, href: "/salary" },
