@@ -45,9 +45,29 @@ export default function InstituteProfilePage() {
             {/* Logo Section */}
             <div className="flex flex-col items-center space-y-4 md:w-1/4">
               <div className="w-32 h-32 rounded-xl bg-secondary border-2 border-dashed border-border flex items-center justify-center flex-col gap-2 relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors">
-                <Building2 className="w-10 h-10 text-muted-foreground group-hover:scale-110 transition-transform" />
-                <span className="text-xs text-muted-foreground font-medium">Upload Logo</span>
-                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+                {formData.logo ? (
+                  <img src={formData.logo} alt="Institute Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <>
+                    <Building2 className="w-10 h-10 text-muted-foreground group-hover:scale-110 transition-transform" />
+                    <span className="text-xs text-muted-foreground font-medium">Upload Logo</span>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  className="absolute inset-0 opacity-0 cursor-pointer" 
+                  accept="image/*" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, logo: reader.result as string }))
+                      }
+                      reader.readAsDataURL(file)
+                    }
+                  }} 
+                />
               </div>
               <p className="text-xs text-center text-muted-foreground">
                 প্রস্তাবিত সাইজ: ৪০০x৪০০ পিক্সেল<br />
