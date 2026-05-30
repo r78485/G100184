@@ -62,7 +62,9 @@ export interface Subject {
   code: string
   classId: string
   teacherId: string
-  type: 'compulsory' | 'optional'
+  type: 'compulsory' | 'optional' | 'group'
+  pdfUrl?: string
+  marks?: number
 }
 
 export interface Attendance {
@@ -336,13 +338,13 @@ const sampleClasses: ClassInfo[] = [
 ]
 
 const sampleSubjects: Subject[] = [
-  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory' },
-  { id: '2', name: 'English', code: 'ENG101', classId: '1', teacherId: '2', type: 'compulsory' },
-  { id: '3', name: 'গণিত', code: 'MAT101', classId: '1', teacherId: '1', type: 'compulsory' },
-  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '1', teacherId: '2', type: 'compulsory' },
-  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '1', teacherId: '2', type: 'compulsory' },
-  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '1', teacherId: '2', type: 'compulsory' },
-  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '1', teacherId: '1', type: 'compulsory' },
+  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
+  { id: '2', name: 'English', code: 'ENG101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
+  { id: '3', name: 'গণিত', code: 'MAT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 100 },
+  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
+  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
+  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
+  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 50 },
 ]
 
 const sampleQuestions: Question[] = [
