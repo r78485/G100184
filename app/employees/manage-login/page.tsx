@@ -22,7 +22,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { useSchoolStore, type Employee } from "@/lib/store"
-import { Key, Search, Eye, EyeOff, LockReset } from "lucide-react"
+import { Key, Search, Eye, EyeOff, RefreshCw } from "lucide-react"
 
 export default function ManageLoginPage() {
   const { employees, updateEmployee } = useSchoolStore()
@@ -148,7 +148,7 @@ export default function ManageLoginPage() {
                           size="sm"
                           onClick={() => handleOpenReset(emp)}
                         >
-                          <LockReset className="w-4 h-4 mr-2" />
+                          <RefreshCw className="w-4 h-4 mr-2" />
                           রিসেট
                         </Button>
                       </TableCell>
@@ -194,7 +194,7 @@ export default function ManageLoginPage() {
                       onClick={() => setNewPassword(Math.floor(100000 + Math.random() * 900000).toString())}
                       title="অটো জেনারেট"
                     >
-                      <LockReset className="w-4 h-4" />
+                      <RefreshCw className="w-4 h-4" />
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">

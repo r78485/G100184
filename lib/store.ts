@@ -330,12 +330,9 @@ const sampleEmployees: Employee[] = [
 ]
 
 const sampleClasses: ClassInfo[] = [
-  { id: '1', name: 'ষষ্ঠ শ্রেণি', section: 'A', capacity: 40, classTeacherId: '2' },
-  { id: '2', name: 'ষষ্ঠ শ্রেণি', section: 'B', capacity: 40, classTeacherId: '2' },
-  { id: '3', name: 'সপ্তম শ্রেণি', section: 'A', capacity: 40, classTeacherId: '2' },
-  { id: '4', name: 'অষ্টম শ্রেণি', section: 'A', capacity: 40, classTeacherId: '2' },
-  { id: '5', name: 'নবম শ্রেণি', section: 'A', capacity: 40, classTeacherId: '1' },
-  { id: '6', name: 'দশম শ্রেণি', section: 'A', capacity: 40, classTeacherId: '1' },
+  { id: '1', name: 'Six', section: 'A', capacity: 40, classTeacherId: '1' },
+  { id: '2', name: 'Seven', section: 'A', capacity: 40, classTeacherId: '2' },
+  { id: '3', name: 'Eight', section: 'A', capacity: 40, classTeacherId: '1' },
 ]
 
 const sampleSubjects: Subject[] = [

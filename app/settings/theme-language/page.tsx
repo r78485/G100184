@@ -1,3 +1,5 @@
+"use client"
+
 import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Monitor, Moon, Sun, Globe, Palette, Check } from "lucide-react"
