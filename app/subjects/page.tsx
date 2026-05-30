@@ -5,6 +5,7 @@ import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Plus, BookOpen, Edit, Trash2, FileText, Download } from "lucide-react"
 import { useSchoolStore, type Subject } from "@/lib/store"
 import { toast } from "sonner"
@@ -26,6 +27,7 @@ export default function SubjectsPage() {
   const [mounted, setMounted] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
+  const [activeTab, setActiveTab] = useState<string>("all")
   
   const [formData, setFormData] = useState<Partial<Subject>>({
     name: '',
@@ -58,7 +60,7 @@ export default function SubjectsPage() {
       setFormData({
         name: '',
         code: '',
-        classId: classes[0]?.id || '',
+        classId: activeTab !== "all" ? activeTab : (classes[0]?.id || ''),
         type: 'compulsory',
         marks: 100,
         pdfUrl: ''
@@ -70,8 +72,6 @@ export default function SubjectsPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // In a real app, you would upload to a server. Here we use a fake URL or base64.
-      // We'll use a temporary Object URL or just store the name for UI purposes to prevent localStorage limit issues.
       const fakeUrl = URL.createObjectURL(file)
       setFormData(prev => ({ ...prev, pdfUrl: fakeUrl }))
       toast.success(`File ${file.name} attached!`)
@@ -101,8 +101,12 @@ export default function SubjectsPage() {
     }
   }
 
-  const compulsoryCount = subjects.filter(s => s.type === 'compulsory').length
-  const optionalCount = subjects.filter(s => s.type === 'optional').length
+  const filteredSubjects = activeTab === "all" 
+    ? subjects 
+    : subjects.filter(s => s.classId === activeTab)
+
+  const compulsoryCount = filteredSubjects.filter(s => s.type === 'compulsory').length
+  const optionalCount = filteredSubjects.filter(s => s.type === 'optional').length
 
   return (
     <DashboardLayout>
@@ -119,95 +123,109 @@ export default function SubjectsPage() {
           </Button>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-3xl font-bold text-foreground">{subjects.length}</p>
-            <p className="text-sm text-muted-foreground">মোট বিষয়</p>
+        {/* Tabs for Class filtering */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex overflow-x-auto pb-2 mb-4 hide-scrollbar">
+            <TabsList className="h-auto p-1 bg-secondary/50">
+              <TabsTrigger value="all" className="px-4 py-2">All Classes</TabsTrigger>
+              {classes.map(c => (
+                <TabsTrigger key={c.id} value={c.id} className="px-4 py-2">{c.name}</TabsTrigger>
+              ))}
+            </TabsList>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-3xl font-bold text-foreground">{compulsoryCount}</p>
-            <p className="text-sm text-muted-foreground">আবশ্যিক বিষয়</p>
+          
+          {/* Stats based on filter */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-3xl font-bold text-foreground">{filteredSubjects.length}</p>
+              <p className="text-sm text-muted-foreground">মোট বিষয়</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-3xl font-bold text-foreground">{compulsoryCount}</p>
+              <p className="text-sm text-muted-foreground">আবশ্যিক বিষয়</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-3xl font-bold text-foreground">{optionalCount}</p>
+              <p className="text-sm text-muted-foreground">ঐচ্ছিক বিষয়</p>
+            </div>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-3xl font-bold text-foreground">{optionalCount}</p>
-            <p className="text-sm text-muted-foreground">ঐচ্ছিক বিষয়</p>
-          </div>
-        </div>
 
-        {/* Table */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-secondary">
-                <tr>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">বিষয়ের নাম</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">কোড</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ক্লাস</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">মার্কস</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ধরন</th>
-                  <th className="text-center px-6 py-4 text-sm font-medium text-muted-foreground">পিডিএফ</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-muted-foreground">অ্যাকশন</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {subjects.map((subject) => {
-                  const cls = classes.find(c => c.id === subject.classId)
-                  return (
-                    <tr key={subject.id} className="hover:bg-secondary/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <BookOpen className="w-5 h-5 text-primary" />
-                          </div>
-                          <span className="font-medium text-foreground">{subject.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-mono text-muted-foreground">{subject.code}</td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">{cls?.name || 'All Classes'}</td>
-                      <td className="px-6 py-4 font-semibold">{subject.marks || '-'}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${typeColors[subject.type] || 'bg-gray-100 text-gray-800'}`}>
-                          {typeLabels[subject.type] || subject.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        {subject.pdfUrl ? (
-                          <a 
-                            href={subject.pdfUrl} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
-                            title="Download/View PDF"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </a>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">নেই</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleOpenModal(subject)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(subject.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
+          <TabsContent value={activeTab} className="mt-0">
+            {/* Table */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-secondary">
+                    <tr>
+                      <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">বিষয়ের নাম</th>
+                      <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">কোড</th>
+                      <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ক্লাস</th>
+                      <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">মার্কস</th>
+                      <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ধরন</th>
+                      <th className="text-center px-6 py-4 text-sm font-medium text-muted-foreground">পিডিএফ</th>
+                      <th className="text-right px-6 py-4 text-sm font-medium text-muted-foreground">অ্যাকশন</th>
                     </tr>
-                  )
-                })}
-                {subjects.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="text-center py-8 text-muted-foreground">কোনো বিষয় পাওয়া যায়নি</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredSubjects.map((subject) => {
+                      const cls = classes.find(c => c.id === subject.classId)
+                      return (
+                        <tr key={subject.id} className="hover:bg-secondary/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <BookOpen className="w-5 h-5 text-primary" />
+                              </div>
+                              <span className="font-medium text-foreground">{subject.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm font-mono text-muted-foreground">{subject.code}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">{cls?.name || 'Unknown'}</td>
+                          <td className="px-6 py-4 font-semibold">{subject.marks || '-'}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-1 text-xs rounded-full ${typeColors[subject.type] || 'bg-gray-100 text-gray-800'}`}>
+                              {typeLabels[subject.type] || subject.type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {subject.pdfUrl ? (
+                              <a 
+                                href={subject.pdfUrl} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                                title="Download/View PDF"
+                              >
+                                <FileText className="w-4 h-4" />
+                              </a>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">নেই</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleOpenModal(subject)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(subject.id)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                    {filteredSubjects.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="text-center py-8 text-muted-foreground">কোনো বিষয় পাওয়া যায়নি</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Add/Edit Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -307,4 +325,5 @@ export default function SubjectsPage() {
     </DashboardLayout>
   )
 }
+
 
