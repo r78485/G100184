@@ -1,0 +1,118 @@
+import DashboardLayout from "@/components/dashboard-layout"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Building2, Save, Upload, Phone, Mail, Globe, MapPin, Hash, Calendar, UserRound } from "lucide-react"
+
+export default function InstituteProfilePage() {
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Institute Profile</h1>
+          <p className="text-muted-foreground">শিক্ষা প্রতিষ্ঠানের মূল তথ্য পরিচালনা করুন</p>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex flex-col md:flex-row gap-8">
+            
+            {/* Logo Section */}
+            <div className="flex flex-col items-center space-y-4 md:w-1/4">
+              <div className="w-32 h-32 rounded-xl bg-secondary border-2 border-dashed border-border flex items-center justify-center flex-col gap-2 relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors">
+                <Building2 className="w-10 h-10 text-muted-foreground group-hover:scale-110 transition-transform" />
+                <span className="text-xs text-muted-foreground font-medium">Upload Logo</span>
+                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+              </div>
+              <p className="text-xs text-center text-muted-foreground">
+                প্রস্তাবিত সাইজ: ৪০০x৪০০ পিক্সেল<br />
+                সর্বোচ্চ সাইজ: ২ MB
+              </p>
+            </div>
+
+            {/* Form Section */}
+            <div className="flex-1 space-y-6">
+              
+              {/* Basic Info */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">প্রাথমিক তথ্য</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-muted-foreground" />
+                      প্রতিষ্ঠানের নাম
+                    </label>
+                    <Input placeholder="যেমন: ঢাকা জিলা স্কুল" defaultValue="GHJS High School" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Hash className="w-4 h-4 text-muted-foreground" />
+                      ইআইআইএন (EIIN) / রেজিস্ট্রেশন নম্বর
+                    </label>
+                    <Input placeholder="যেমন: 108162" defaultValue="123456" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      প্রতিষ্ঠাকালীন বছর
+                    </label>
+                    <Input type="number" placeholder="যেমন: 1995" defaultValue="1995" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <UserRound className="w-4 h-4 text-muted-foreground" />
+                      অধ্যক্ষ / প্রধান শিক্ষকের নাম
+                    </label>
+                    <Input placeholder="সম্পূর্ণ নাম লিখুন" defaultValue="মোঃ আব্দুর রহমান" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2 mt-6">যোগাযোগের তথ্য</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      ফোন নম্বর
+                    </label>
+                    <Input placeholder="যেমন: +880 1..." defaultValue="+880 1711-123456" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      ইমেইল এড্রেস
+                    </label>
+                    <Input type="email" placeholder="যেমন: info@school.edu.bd" defaultValue="info@ghjs.edu.bd" />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-muted-foreground" />
+                      ওয়েবসাইট
+                    </label>
+                    <Input type="url" placeholder="যেমন: https://www.school.edu.bd" defaultValue="https://www.ghjs.edu.bd" />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      সম্পূর্ণ ঠিকানা
+                    </label>
+                    <Input placeholder="যেমন: ১২৩, স্কুল রোড, ঢাকা" defaultValue="স্কুল রোড, ধানমন্ডি, ঢাকা, বাংলাদেশ" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <div className="pt-4 flex justify-end">
+                <Button className="gap-2 px-6">
+                  <Save className="w-4 h-4" />
+                  সংরক্ষণ করুন
+                </Button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </DashboardLayout>
+  )
+}
