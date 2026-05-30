@@ -44,7 +44,7 @@ import {
 } from "lucide-react"
 
 export default function QuestionBankPage() {
-  const { classes, subjects, questionBank, addQuestion, updateQuestion, deleteQuestion } = useSchoolStore()
+  const { classes, subjects, questions: questionBank = [], addQuestion, updateQuestion, deleteQuestion } = useSchoolStore()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClass, setSelectedClass] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("")
