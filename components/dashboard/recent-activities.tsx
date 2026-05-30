@@ -1,6 +1,10 @@
-import { UserPlus, Receipt, FileText, Calendar } from "lucide-react"
+"use client"
 
-const activities = [
+import { UserPlus, Receipt, FileText, Calendar } from "lucide-react"
+import { useTranslation } from "@/lib/i18n"
+import { useState, useEffect } from "react"
+
+const activitiesBn = [
   {
     id: 1,
     icon: UserPlus,
@@ -31,10 +35,51 @@ const activities = [
   },
 ]
 
+const activitiesEn = [
+  {
+    id: 1,
+    icon: UserPlus,
+    title: "New Student Admission",
+    description: "Rahat Hossain enrolled in Class 5",
+    time: "2 mins ago",
+  },
+  {
+    id: 2,
+    icon: Receipt,
+    title: "Fee Collected",
+    description: "Md. Abdullah paid 5,000 BDT fee",
+    time: "15 mins ago",
+  },
+  {
+    id: 3,
+    icon: FileText,
+    title: "Exam Results Published",
+    description: "Class 10 Half-yearly results published",
+    time: "1 hour ago",
+  },
+  {
+    id: 4,
+    icon: Calendar,
+    title: "Timetable Updated",
+    description: "Class 8 routine has been changed",
+    time: "3 hours ago",
+  },
+]
+
 export function RecentActivities() {
+  const { t, lang } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  const activities = lang === 'bn' ? activitiesBn : activitiesEn
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
     <div className="bg-card border border-border rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-foreground mb-4">সাম্প্রতিক কার্যক্রম</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">{t("Recent Activities")}</h3>
       <div className="space-y-4">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 transition-colors">

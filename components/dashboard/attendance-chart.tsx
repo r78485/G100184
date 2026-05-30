@@ -1,8 +1,10 @@
 "use client"
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { useTranslation } from "@/lib/i18n"
+import { useState, useEffect } from "react"
 
-const data = [
+const dataBn = [
   { name: "সোম", present: 420, absent: 30 },
   { name: "মঙ্গল", present: 435, absent: 15 },
   { name: "বুধ", present: 410, absent: 40 },
@@ -11,22 +13,41 @@ const data = [
   { name: "শনি", present: 380, absent: 70 },
 ]
 
+const dataEn = [
+  { name: "Mon", present: 420, absent: 30 },
+  { name: "Tue", present: 435, absent: 15 },
+  { name: "Wed", present: 410, absent: 40 },
+  { name: "Thu", present: 445, absent: 5 },
+  { name: "Fri", present: 425, absent: 25 },
+  { name: "Sat", present: 380, absent: 70 },
+]
+
 export function AttendanceChart() {
+  const { t, lang } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  const data = lang === 'bn' ? dataBn : dataEn
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">সাপ্তাহিক উপস্থিতি</h3>
-          <p className="text-sm text-muted-foreground">Weekly Attendance Overview</p>
+          <h3 className="text-lg font-semibold text-foreground">{t("Weekly Attendance")}</h3>
+          <p className="text-sm text-muted-foreground">{t("Weekly Attendance Overview")}</p>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-primary" />
-            <span className="text-muted-foreground">Present</span>
+            <span className="text-muted-foreground">{t("Present")}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-destructive" />
-            <span className="text-muted-foreground">Absent</span>
+            <span className="text-muted-foreground">{t("Absent")}</span>
           </div>
         </div>
       </div>

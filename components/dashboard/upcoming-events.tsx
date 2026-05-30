@@ -1,6 +1,10 @@
-import { Calendar, Clock } from "lucide-react"
+"use client"
 
-const events = [
+import { Calendar, Clock } from "lucide-react"
+import { useTranslation } from "@/lib/i18n"
+import { useState, useEffect } from "react"
+
+const eventsBn = [
   {
     id: 1,
     title: "বার্ষিক ক্রীড়া প্রতিযোগিতা",
@@ -31,6 +35,37 @@ const events = [
   },
 ]
 
+const eventsEn = [
+  {
+    id: 1,
+    title: "Annual Sports Competition",
+    date: "May 28, 2026",
+    time: "9:00 AM",
+    type: "sports",
+  },
+  {
+    id: 2,
+    title: "Parents Meeting",
+    date: "May 30, 2026",
+    time: "3:00 PM",
+    type: "meeting",
+  },
+  {
+    id: 3,
+    title: "Half-yearly Exam Starts",
+    date: "June 1, 2026",
+    time: "10:00 AM",
+    type: "exam",
+  },
+  {
+    id: 4,
+    title: "Science Fair",
+    date: "June 10, 2026",
+    time: "11:00 AM",
+    type: "event",
+  },
+]
+
 const typeColors: Record<string, string> = {
   sports: "bg-chart-1",
   meeting: "bg-chart-2",
@@ -39,9 +74,19 @@ const typeColors: Record<string, string> = {
 }
 
 export function UpcomingEvents() {
+  const { t, lang } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  const events = lang === 'bn' ? eventsBn : eventsEn
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
     <div className="bg-card border border-border rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-foreground mb-4">আসন্ন ইভেন্ট</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">{t("Upcoming Events")}</h3>
       <div className="space-y-3">
         {events.map((event) => (
           <div

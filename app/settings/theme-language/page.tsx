@@ -6,9 +6,11 @@ import { Monitor, Moon, Sun, Globe, Palette, Check } from "lucide-react"
 import { useSchoolStore } from "@/lib/store"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "@/lib/i18n"
 
 export default function ThemeLanguagePage() {
   const { themeLanguage, updateThemeLanguage } = useSchoolStore()
+  const { t } = useTranslation()
   const [mounted, setMounted] = useState(false)
   const [localState, setLocalState] = useState(themeLanguage)
 
@@ -24,14 +26,13 @@ export default function ThemeLanguagePage() {
 
   if (!mounted) return null
 
-  const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-rose-600', 'bg-violet-600', 'bg-orange-600']
-
+  // Removing primaryColor since it's not in store types and user just asked for basic dark/light mode for now
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Theme & Language</h1>
-          <p className="text-muted-foreground">সিস্টেমের ভাষা এবং থিম কাস্টমাইজ করুন</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("Theme & Language")}</h1>
+          <p className="text-muted-foreground">{t("Customize system language and theme")}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -42,48 +43,33 @@ export default function ThemeLanguagePage() {
                 <Palette className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg text-foreground">থিম (Theme)</h3>
-                <p className="text-sm text-muted-foreground">সিস্টেমের কালার স্কিম পরিবর্তন করুন</p>
+                <h3 className="font-semibold text-lg text-foreground">{t("Theme")}</h3>
+                <p className="text-sm text-muted-foreground">{t("Change the system color scheme")}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-8">
               <button 
                 onClick={() => setLocalState(prev => ({...prev, theme: 'Light'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Light' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Light' || localState.theme === 'light' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Sun className={`w-6 h-6 ${localState.theme === 'Light' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className="text-sm font-medium">Light</span>
+                <Sun className={`w-6 h-6 ${localState.theme === 'Light' || localState.theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className="text-sm font-medium">{t("Light")}</span>
               </button>
               <button 
                 onClick={() => setLocalState(prev => ({...prev, theme: 'Dark'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Dark' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Dark' || localState.theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Moon className={`w-6 h-6 ${localState.theme === 'Dark' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className="text-sm font-medium">Dark</span>
+                <Moon className={`w-6 h-6 ${localState.theme === 'Dark' || localState.theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className="text-sm font-medium">{t("Dark")}</span>
               </button>
               <button 
                 onClick={() => setLocalState(prev => ({...prev, theme: 'System'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'System' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'System' || localState.theme === 'system' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Monitor className={`w-6 h-6 ${localState.theme === 'System' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className="text-sm font-medium">System</span>
+                <Monitor className={`w-6 h-6 ${localState.theme === 'System' || localState.theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className="text-sm font-medium">{t("System")}</span>
               </button>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-foreground">প্রাইমারি কালার (Primary Color)</label>
-              <div className="flex gap-3">
-                {colors.map((color, i) => (
-                  <button 
-                    key={i} 
-                    onClick={() => setLocalState(prev => ({...prev, primaryColor: color}))}
-                    className={`w-8 h-8 rounded-full ${color} flex items-center justify-center ring-2 ring-offset-2 ${localState.primaryColor === color ? 'ring-primary' : 'ring-transparent'}`}
-                  >
-                    {localState.primaryColor === color && <Check className="w-4 h-4 text-white" />}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -94,39 +80,39 @@ export default function ThemeLanguagePage() {
                 <Globe className="w-5 h-5 text-blue-500" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg text-foreground">ভাষা (Language)</h3>
-                <p className="text-sm text-muted-foreground">সিস্টেমের ডিফল্ট ভাষা নির্বাচন করুন</p>
+                <h3 className="font-semibold text-lg text-foreground">{t("Language")}</h3>
+                <p className="text-sm text-muted-foreground">{t("Select system default language")}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <label 
-                className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-colors ${localState.language === 'Bangla' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                onClick={() => setLocalState(prev => ({...prev, language: 'Bangla'}))}
+                className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-colors ${localState.language === 'bn' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                onClick={() => setLocalState(prev => ({...prev, language: 'bn'}))}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🇧🇩</span>
                   <span className="font-medium text-foreground">বাংলা (Bangla)</span>
                 </div>
-                <div className={`w-5 h-5 rounded-full ${localState.language === 'Bangla' ? 'border-4 border-primary bg-background' : 'border-2 border-muted-foreground'}`}></div>
+                <div className={`w-5 h-5 rounded-full ${localState.language === 'bn' ? 'border-4 border-primary bg-background' : 'border-2 border-muted-foreground'}`}></div>
               </label>
 
               <label 
-                className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-colors ${localState.language === 'English' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                onClick={() => setLocalState(prev => ({...prev, language: 'English'}))}
+                className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-colors ${localState.language === 'en' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                onClick={() => setLocalState(prev => ({...prev, language: 'en'}))}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🇺🇸</span>
                   <span className="font-medium text-foreground">English (US)</span>
                 </div>
-                <div className={`w-5 h-5 rounded-full ${localState.language === 'English' ? 'border-4 border-primary bg-background' : 'border-2 border-muted-foreground'}`}></div>
+                <div className={`w-5 h-5 rounded-full ${localState.language === 'en' ? 'border-4 border-primary bg-background' : 'border-2 border-muted-foreground'}`}></div>
               </label>
             </div>
           </div>
         </div>
 
         <div className="flex justify-end">
-          <Button className="px-6" onClick={handleSave}>পরিবর্তন সেভ করুন</Button>
+          <Button className="px-6" onClick={handleSave}>{t("Save Changes")}</Button>
         </div>
       </div>
     </DashboardLayout>

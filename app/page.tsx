@@ -1,3 +1,5 @@
+"use client"
+
 import { Users, GraduationCap, UserCog, Banknote, CalendarCheck, BookOpen } from "lucide-react"
 import DashboardLayout from "@/components/dashboard-layout"
 import { StatCard } from "@/components/dashboard/stat-card"
@@ -5,58 +7,69 @@ import { AttendanceChart } from "@/components/dashboard/attendance-chart"
 import { RecentActivities } from "@/components/dashboard/recent-activities"
 import { FeeCollectionChart } from "@/components/dashboard/fee-collection-chart"
 import { UpcomingEvents } from "@/components/dashboard/upcoming-events"
+import { useTranslation } from "@/lib/i18n"
+import { useState, useEffect } from "react"
 
 export default function DashboardPage() {
+  const { t, lang } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Page Header */}
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">স্কুল ম্যানেজমেন্ট সিস্টেমে স্বাগতম</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("Dashboard")}</h1>
+          <p className="text-muted-foreground">{t("Welcome to School Management System")}</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <StatCard
-            title="মোট ছাত্রছাত্রী"
+            title={t("Total Students")}
             value="1,250"
-            change="+12 এই মাসে"
+            change={lang === 'bn' ? "+12 এই মাসে" : "+12 this month"}
             changeType="positive"
             icon={Users}
           />
           <StatCard
-            title="মোট ক্লাস"
+            title={t("Total Classes")}
             value="24"
             change="Play - 10"
             changeType="neutral"
             icon={GraduationCap}
           />
           <StatCard
-            title="শিক্ষক/কর্মচারী"
+            title={t("Teachers/Staff")}
             value="85"
-            change="+3 নতুন"
+            change={lang === 'bn' ? "+3 নতুন" : "+3 new"}
             changeType="positive"
             icon={UserCog}
           />
           <StatCard
-            title="এই মাসের আয়"
+            title={t("This Month's Income")}
             value="৳5.2L"
-            change="+8% বৃদ্ধি"
+            change={lang === 'bn' ? "+8% বৃদ্ধি" : "+8% increase"}
             changeType="positive"
             icon={Banknote}
           />
           <StatCard
-            title="আজকের উপস্থিতি"
+            title={t("Today's Attendance")}
             value="94%"
-            change="1,175 জন"
+            change={lang === 'bn' ? "1,175 জন" : "1,175 students"}
             changeType="positive"
             icon={CalendarCheck}
           />
           <StatCard
-            title="মোট বিষয়"
+            title={t("Total Subjects")}
             value="42"
-            change="সকল ক্লাসে"
+            change={lang === 'bn' ? "সকল ক্লাসে" : "In all classes"}
             changeType="neutral"
             icon={BookOpen}
           />

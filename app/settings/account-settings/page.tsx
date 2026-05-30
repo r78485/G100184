@@ -7,9 +7,11 @@ import { UserCircle, Shield, Key, Camera, Mail, Phone } from "lucide-react"
 import { useSchoolStore } from "@/lib/store"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "@/lib/i18n"
 
 export default function AccountSettingsPage() {
   const { accountSetting, updateAccountSetting } = useSchoolStore()
+  const { t } = useTranslation()
   const [mounted, setMounted] = useState(false)
   const [localState, setLocalState] = useState(accountSetting)
 
@@ -63,8 +65,8 @@ export default function AccountSettingsPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
-          <p className="text-muted-foreground">আপনার নিজের প্রোফাইল এবং সিকিউরিটি সেটিংস পরিচালনা করুন</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("Account Settings")}</h1>
+          <p className="text-muted-foreground">{t("Manage your personal profile and security settings")}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -76,8 +78,8 @@ export default function AccountSettingsPage() {
                   <UserCircle className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-foreground">প্রোফাইল তথ্য</h3>
-                  <p className="text-sm text-muted-foreground">আপনার ব্যক্তিগত তথ্য আপডেট করুন</p>
+                  <h3 className="font-semibold text-lg text-foreground">{t("Profile Information")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("Update your personal information")}</p>
                 </div>
               </div>
 
@@ -93,32 +95,32 @@ export default function AccountSettingsPage() {
                     </div>
                     <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
                   </div>
-                  <span className="text-sm font-medium text-blue-500 cursor-pointer hover:underline">ছবি পরিবর্তন করুন</span>
+                  <span className="text-sm font-medium text-blue-500 cursor-pointer hover:underline">{t("Change Photo")}</span>
                 </div>
 
                 {/* Info Fields */}
                 <div className="flex-1 space-y-4 w-full">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2 sm:col-span-2">
-                      <label className="text-sm font-medium text-foreground">সম্পূর্ণ নাম</label>
-                      <Input name="fullName" value={localState.fullName} onChange={handleChange} placeholder="আপনার নাম" />
+                      <label className="text-sm font-medium text-foreground">{t("Full Name")}</label>
+                      <Input name="fullName" value={localState.fullName} onChange={handleChange} placeholder="Admin User" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground flex items-center gap-2">
                         <Phone className="w-4 h-4 text-muted-foreground" />
-                        ফোন নম্বর
+                        {t("Phone Number")}
                       </label>
                       <Input name="phone" value={localState.phone} onChange={handleChange} placeholder="+880 1..." />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground flex items-center gap-2">
                         <Mail className="w-4 h-4 text-muted-foreground" />
-                        ইমেইল এড্রেস
+                        {t("Email Address")}
                       </label>
                       <Input name="email" type="email" value={localState.email} onChange={handleChange} placeholder="admin@example.com" />
                     </div>
                   </div>
-                  <Button className="mt-4" onClick={handleSaveProfile}>প্রোফাইল সেভ করুন</Button>
+                  <Button className="mt-4" onClick={handleSaveProfile}>{t("Save Profile")}</Button>
                 </div>
               </div>
             </div>
@@ -132,8 +134,8 @@ export default function AccountSettingsPage() {
                   <Shield className="w-5 h-5 text-amber-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-foreground">পাসওয়ার্ড পরিবর্তন</h3>
-                  <p className="text-sm text-muted-foreground">আপনার একাউন্ট সুরক্ষিত রাখুন</p>
+                  <h3 className="font-semibold text-lg text-foreground">{t("Change Password")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("Keep your account secure")}</p>
                 </div>
               </div>
 
@@ -141,25 +143,25 @@ export default function AccountSettingsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground flex items-center gap-2">
                     <Key className="w-4 h-4 text-muted-foreground" />
-                    বর্তমান পাসওয়ার্ড
+                    {t("Current Password")}
                   </label>
                   <Input name="current" type="password" value={passwords.current} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground flex items-center gap-2">
                     <Key className="w-4 h-4 text-muted-foreground" />
-                    নতুন পাসওয়ার্ড
+                    {t("New Password")}
                   </label>
                   <Input name="newPass" type="password" value={passwords.newPass} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground flex items-center gap-2">
                     <Key className="w-4 h-4 text-muted-foreground" />
-                    পাসওয়ার্ড নিশ্চিত করুন
+                    {t("Confirm Password")}
                   </label>
                   <Input name="confirmPass" type="password" value={passwords.confirmPass} onChange={handlePasswordChange} placeholder="••••••••" />
                 </div>
-                <Button className="w-full mt-4" variant="default" onClick={handleUpdatePassword}>পাসওয়ার্ড আপডেট করুন</Button>
+                <Button className="w-full mt-4" variant="default" onClick={handleUpdatePassword}>{t("Update Password")}</Button>
               </div>
             </div>
           </div>

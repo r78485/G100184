@@ -3,6 +3,9 @@
 import { Bell, Search, User, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react"
+import { useSchoolStore } from "@/lib/store"
+import { useTranslation } from "@/lib/i18n"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +16,21 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function Header() {
+  const { accountSetting } = useSchoolStore()
+  const { t } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-card border-b border-border">
       {/* Search */}
       <div className="relative w-full max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Search students, classes, reports..."
+          placeholder={t("Search placeholder")}
           className="pl-10 bg-secondary border-border focus:border-primary"
         />
       </div>
@@ -42,19 +53,21 @@ export function Header() {
                 <User className="w-4 h-4 text-primary-foreground" />
               </div>
               <div className="hidden md:flex flex-col items-start">
-                <span className="text-sm font-medium text-foreground">Admin User</span>
-                <span className="text-xs text-muted-foreground">Administrator</span>
+                <span className="text-sm font-medium text-foreground">
+                  {mounted ? accountSetting.fullName : "Admin User"}
+                </span>
+                <span className="text-xs text-muted-foreground">{t("Administrator")}</span>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("My Account")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem>{t("Profile")}</DropdownMenuItem>
+            <DropdownMenuItem>{t("Settings")}</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">Logout</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive">{t("Logout")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

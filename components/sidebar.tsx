@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 import {
   LayoutDashboard,
   Settings,
@@ -119,12 +120,37 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   const pathname = usePathname()
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
-    "General Settings": true
+  const { t } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  
+  // Only open General Settings by default if we are inside a settings route
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
+    return {
+      "General Settings": pathname?.startsWith('/settings') || false,
+      "Students": pathname?.startsWith('/students') || false,
+      "Employees": pathname?.startsWith('/employees') || false,
+    }
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggleMenu = (name: string) => {
     setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }))
+  }
+
+  // To prevent hydration mismatch with translations
+  if (!mounted) {
+    return (
+      <aside className={cn("fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col", collapsed ? "w-16" : "w-64")}>
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
+            <School className="w-6 h-6 text-primary-foreground" />
+          </div>
+        </div>
+      </aside>
+    )
   }
 
   return (
@@ -142,7 +168,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         {!collapsed && (
           <div className="flex flex-col">
             <span className="font-semibold text-sidebar-foreground">EduManage</span>
-            <span className="text-xs text-muted-foreground">স্কুল ম্যানেজমেন্ট</span>
+            <span className="text-xs text-muted-foreground">School Management</span>
           </div>
         )}
       </div>
@@ -179,7 +205,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                         : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground",
                       hasSubItems && "cursor-pointer"
                     )}
-                    title={collapsed ? item.name : undefined}
+                    title={collapsed ? t(item.name) : undefined}
                   >
                     <div className="flex items-center gap-3">
                       <item.icon
@@ -189,7 +215,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                         )}
                       />
                       {!collapsed && (
-                        <span className="text-sm font-medium truncate">{item.name}</span>
+                        <span className="text-sm font-medium truncate">{t(item.name)}</span>
                       )}
                     </div>
                     {hasSubItems && !collapsed && (
@@ -222,7 +248,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                                 "w-4 h-4",
                                 isSubActive ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
                               )} />
-                              <span className="truncate">{subItem.name}</span>
+                              <span className="truncate">{t(subItem.name)}</span>
                             </Link>
                           </li>
                         )
@@ -247,7 +273,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
           ) : (
             <div className="flex items-center gap-2">
               <ChevronLeft className="w-5 h-5" />
-              <span className="text-sm">Collapse</span>
+              <span className="text-sm">{t("Collapse")}</span>
             </div>
           )}
         </button>
