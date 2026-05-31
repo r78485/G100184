@@ -9,7 +9,9 @@ export interface Student {
   name: string
   nameEn: string
   fatherName: string
+  fatherNid?: string
   motherName: string
+  motherNid?: string
   guardianPhone: string
   dateOfBirth: string
   gender: string

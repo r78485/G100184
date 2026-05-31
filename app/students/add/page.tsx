@@ -26,7 +26,9 @@ export default function AddStudentPage() {
     name: "",
     nameEn: "",
     fatherName: "",
+    fatherNid: "",
     motherName: "",
+    motherNid: "",
     guardianPhone: "",
     dateOfBirth: "",
     gender: "male",
@@ -99,12 +101,28 @@ export default function AddStudentPage() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label>পিতার এনআইডি / NID</Label>
+                  <Input
+                    value={formData.fatherNid}
+                    onChange={(e) => setFormData({ ...formData, fatherNid: e.target.value })}
+                    placeholder="পিতার এনআইডি নম্বর"
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>মাতার নাম *</Label>
                   <Input
                     required
                     value={formData.motherName}
                     onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
                     placeholder="মাতার নাম"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>মাতার এনআইডি / NID</Label>
+                  <Input
+                    value={formData.motherNid}
+                    onChange={(e) => setFormData({ ...formData, motherNid: e.target.value })}
+                    placeholder="মাতার এনআইডি নম্বর"
                   />
                 </div>
                 <div className="space-y-2">
@@ -181,8 +199,9 @@ export default function AddStudentPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>জন্ম নিবন্ধন / NID নং</Label>
+                  <Label>শিক্ষার্থীর জন্ম নিবন্ধন নম্বর *</Label>
                   <Input
+                    required
                     value={formData.nidOrBirthCert}
                     onChange={(e) => setFormData({ ...formData, nidOrBirthCert: e.target.value })}
                     placeholder="জন্ম নিবন্ধন নম্বর"
@@ -273,12 +292,26 @@ export default function AddStudentPage() {
                   />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <Label>ছবি (URL)</Label>
+                  <Label>ছবি আপলোড</Label>
                   <Input
-                    value={formData.photo}
-                    onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                    placeholder="ছবির URL দিন"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setFormData({ ...formData, photo: reader.result as string });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
                   />
+                  {formData.photo && (
+                    <div className="mt-2">
+                      <img src={formData.photo} alt="Preview" className="w-24 h-24 object-cover rounded-md border" />
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
