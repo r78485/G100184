@@ -13,6 +13,11 @@ function ThemeSync() {
   const { setTheme } = useTheme()
 
   React.useEffect(() => {
+    // Rehydrate Zustand store on client mount to prevent hydration mismatch
+    useSchoolStore.persist.rehydrate()
+  }, [])
+
+  React.useEffect(() => {
     if (themeLanguage?.theme) {
       setTheme(themeLanguage.theme.toLowerCase())
     }

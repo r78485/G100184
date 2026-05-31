@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, Edit, Trash2, Search, Receipt } from "lucide-react"
 import { useSchoolStore, FeeParticular } from "@/lib/store"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 
 export default function FeesParticularsPage() {
@@ -20,6 +20,7 @@ export default function FeesParticularsPage() {
     description: '',
     status: 'Active'
   })
+  const nameInputRef = useRef<HTMLInputElement | null>(null)
   
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -38,6 +39,13 @@ export default function FeesParticularsPage() {
       return
     }
     
+    // Prevent duplicate fee names
+    const duplicate = feeParticulars.find(p => p.name.trim().toLowerCase() === formData.name.trim().toLowerCase() && p.id !== editId)
+    if (duplicate) {
+      toast.error("A fee with this name already exists.")
+      return
+    }
+
     if (isEditing && editId) {
       updateFeeParticular(editId, formData)
       toast.success("Fee updated successfully!")
@@ -74,6 +82,8 @@ export default function FeesParticularsPage() {
       description: '',
       status: 'Active'
     })
+    // focus name field for convenience
+    setTimeout(() => nameInputRef.current?.focus(), 50)
   }
 
   const filteredParticulars = feeParticulars.filter(p => 
@@ -105,7 +115,7 @@ export default function FeesParticularsPage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">ফি এর নাম</label>
-                <Input name="name" value={formData.name} onChange={handleChange} placeholder="যেমন: Tuition Fee" />
+                <Input ref={nameInputRef} name="name" value={formData.name} onChange={handleChange} placeholder="যেমন: Tuition Fee" onKeyDown={(e) => { if (e.key === 'Enter') handleSave() }} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">সংক্ষিপ্ত বিবরণ (ঐচ্ছিক)</label>

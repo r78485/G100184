@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { useState, useEffect } from "react"
 import { useSchoolStore } from "@/lib/store"
 import { useTranslation } from "@/lib/i18n"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +20,19 @@ import {
 export function Header() {
   const { t } = useTranslation()
   const accountSetting = useSchoolStore((state) => state.accountSetting)
+  const logoutUser = useSchoolStore((state) => state.logoutUser)
   const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const handleLogout = () => {
+    logoutUser()
+    toast.success("সফলভাবে লগআউট করা হয়েছে!")
+    router.push("/login")
+  }
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-card border-b border-border">
@@ -64,10 +74,16 @@ export function Header() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>{t("My Account")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>{t("Profile")}</DropdownMenuItem>
-            <DropdownMenuItem>{t("Settings")}</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/settings/account-settings")}>
+              {t("Profile")}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/settings")}>
+              {t("Settings")}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">{t("Logout")}</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive cursor-pointer" onClick={handleLogout}>
+              {t("Logout")}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

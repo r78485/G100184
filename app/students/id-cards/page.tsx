@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import DashboardLayout from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { IdCard, Download } from "lucide-react"
@@ -23,15 +23,23 @@ export default function IdCardsPage() {
   const [selectedClassForId, setSelectedClassForId] = useState<string>("all")
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
   const classIdCardsRef = useRef<HTMLDivElement>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const classStudentsForId = students.filter(
     (s) => selectedClassForId === "all" || s.classId === selectedClassForId
   )
 
+  // initialize selection to all students in class when class changes
+  useEffect(() => {
+    setSelectedIds(new Set(classStudentsForId.map(s => s.id)))
+  }, [selectedClassForId, students])
+
+  const effectiveStudents = classStudentsForId.filter(s => selectedIds.has(s.id))
+
   const cardsPerPage = 9
-  const pageCount = Math.ceil(classStudentsForId.length / cardsPerPage)
+  const pageCount = Math.ceil(effectiveStudents.length / cardsPerPage)
   const a4Pages = Array.from({ length: pageCount }, (_, i) => 
-    classStudentsForId.slice(i * cardsPerPage, (i + 1) * cardsPerPage)
+    effectiveStudents.slice(i * cardsPerPage, (i + 1) * cardsPerPage)
   )
 
   const downloadClassIdCards = async () => {
@@ -141,7 +149,19 @@ export default function IdCardsPage() {
                       <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 1} - Fronts</div>
                       <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4">
                         {pageStudents.map(student => (
-                          <IdCardFront key={`front-${student.id}`} student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />
+                          <div key={`front-wrap-${student.id}`} className="relative">
+                            <label className="absolute top-1 left-1 z-30 bg-white/80 rounded-full p-1">
+                              <input type="checkbox" className="w-4 h-4" checked={selectedIds.has(student.id)} onChange={(e) => {
+                                setSelectedIds(prev => {
+                                  const next = new Set(prev)
+                                  if (e.target.checked) next.add(student.id)
+                                  else next.delete(student.id)
+                                  return next
+                                })
+                              }} />
+                            </label>
+                            <IdCardFront student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />
+                          </div>
                         ))}
                       </div>
                     </div>

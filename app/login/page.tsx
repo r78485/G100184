@@ -9,9 +9,11 @@ import { User, Lock, Eye, EyeOff, GraduationCap, Users, MonitorPlay } from "luci
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import styles from "./login.module.css"
+import { useSchoolStore } from "@/lib/store"
 
 export default function LoginPage() {
   const router = useRouter()
+  const loginUser = useSchoolStore((state) => state.loginUser)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -32,6 +34,12 @@ export default function LoginPage() {
     const isTeacher = username.toLowerCase() === "teacher" && password === "123456"
 
     if (isAdmin || isStudent || isTeacher || password === "123456") {
+      let role: "admin" | "student" | "teacher" = "admin"
+      if (isStudent) role = "student"
+      else if (isTeacher) role = "teacher"
+
+      loginUser(role, username)
+
       toast.success("লগইন সফল হয়েছে! ড্যাশবোর্ডে রিডাইরেক্ট করা হচ্ছে...")
       setTimeout(() => {
         router.push("/")
