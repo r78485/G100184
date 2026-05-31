@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function Header() {
-  const { accountSetting } = useSchoolStore()
   const { t } = useTranslation()
+  const accountSetting = useSchoolStore((state) => state.accountSetting)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

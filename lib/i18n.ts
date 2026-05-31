@@ -222,8 +222,8 @@ export const translations: Translations = {
 }
 
 export function useTranslation() {
-  const { themeLanguage } = useSchoolStore()
-  // themeLanguage.language might be 'en' or 'bn'
+  const themeLanguage = useSchoolStore((state) => state.themeLanguage)
+  // themeLanguage?.language might be 'en' or 'bn'
   const lang = themeLanguage?.language || 'bn'
 
   const t = (key: string): string => {
