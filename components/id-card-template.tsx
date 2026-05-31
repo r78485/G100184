@@ -31,7 +31,7 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
         {/* Header: use institute profile if available */}
         <div className="relative z-10 flex flex-col items-center pt-3">
           {useSchoolStore().instituteProfile?.logo ? (
-            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-8 h-8 rounded-full object-cover mb-1 shadow-sm" />
+            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-8 h-8 rounded-full object-cover mb-1 shadow-sm" crossOrigin="anonymous" />
           ) : (
             <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
               <span className={`font-bold text-[10px] ${accentText}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>
@@ -46,7 +46,7 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
       <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-20">
         <div className="w-20 h-20 rounded-full border-[3px] border-white bg-slate-100 overflow-hidden shadow-sm flex items-center justify-center">
           {student.photo ? (
-            <img src={student.photo} alt={student.name} className="w-full h-full object-cover" />
+            <img src={student.photo} alt={student.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
           ) : (
             <User className="w-10 h-10 text-slate-400" />
           )}
@@ -54,7 +54,7 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
       </div>
 
       {/* Details Section */}
-      <div className="pt-12 px-4 pb-4 flex-1 flex flex-col items-center bg-slate-50/50">
+      <div className="pt-12 px-4 pb-4 h-[194px] flex flex-col items-center bg-slate-50/50">
         <h3 className="font-bold text-sm text-slate-800 uppercase text-center m-0">{student.name}</h3>
         <p className={`text-[7px] font-semibold uppercase tracking-widest ${accentText} mb-3`}>Student</p>
 
@@ -136,7 +136,7 @@ export function IdCardBack({ student, variant = "blue", className = "" }: IdCard
 
         <div className="mt-auto flex flex-col items-center pb-2">
           {useSchoolStore().instituteProfile?.logo ? (
-            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-5 h-5 rounded-full mb-1 shadow-sm" />
+            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-5 h-5 rounded-full mb-1 shadow-sm" crossOrigin="anonymous" />
           ) : (
             <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
               <span className={`font-bold text-[8px] ${isRed ? "text-red-700" : "text-blue-800"}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>

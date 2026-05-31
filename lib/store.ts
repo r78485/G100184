@@ -832,31 +832,9 @@ export const useSchoolStore = create<SchoolStore>()(
         accountsForFees: state.accountsForFees.filter(a => a.id !== id)
       })),
       
-      updateAccountSetting: (setting) => set((state) => {
-        const updated = { ...state.accountSetting, ...setting }
-        // Also update persisted localStorage entry used by zustand persist middleware
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            const key = 'school-management-store'
-            const raw = window.localStorage.getItem(key)
-            if (raw) {
-              try {
-                const parsed = JSON.parse(raw)
-                parsed.state = { ...parsed.state, accountSetting: updated }
-                window.localStorage.setItem(key, JSON.stringify(parsed))
-              } catch (e) {
-                // if parsing fails, rewrite minimal structure
-                window.localStorage.setItem(key, JSON.stringify({ state: { accountSetting: updated } }))
-              }
-            } else {
-              window.localStorage.setItem(key, JSON.stringify({ state: { accountSetting: updated } }))
-            }
-          }
-        } catch (e) {
-          // ignore localStorage errors
-        }
-        return ({ accountSetting: updated })
-      }),
+      updateAccountSetting: (setting) => set((state) => ({
+        accountSetting: { ...state.accountSetting, ...setting }
+      })),
       
       addRuleRegulation: (rule) => set((state) => ({
         rulesRegulations: [...state.rulesRegulations, { ...rule, id: generateId() }]

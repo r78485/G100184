@@ -30,10 +30,10 @@ export default function EmployeeIdCardsPage() {
     (e) => selectedDepartment === "all" || e.department === selectedDepartment
   )
 
-  const cardsPerPage = 9
-  const pageCount = Math.ceil(filteredEmployees.length / cardsPerPage)
+  const employeesPerPage = 4
+  const pageCount = Math.ceil(filteredEmployees.length / employeesPerPage)
   const a4Pages = Array.from({ length: pageCount }, (_, i) => 
-    filteredEmployees.slice(i * cardsPerPage, (i + 1) * cardsPerPage)
+    filteredEmployees.slice(i * employeesPerPage, (i + 1) * employeesPerPage)
   )
 
   const downloadIdCards = async () => {
@@ -134,31 +134,17 @@ export default function EmployeeIdCardsPage() {
               <div className="flex flex-col items-center gap-8 pb-8" ref={idCardsRef}>
                 {a4Pages.map((pageEmployees, pageIndex) => (
                   <div key={`page-${pageIndex}`} className="flex flex-col gap-8">
-                    {/* Fronts Page */}
+                    {/* Combined Front & Back Page */}
                     <div 
                       className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
                       style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
                     >
-                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 1} - Fronts</div>
+                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex + 1}</div>
                       <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4">
-                        {pageEmployees.map(employee => (
-                          <EmployeeIdCardFront key={`front-${employee.id}`} employee={employee} variant={employee.designation.includes('শিক্ষক') ? 'purple' : 'teal'} />
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Backs Page */}
-                    <div 
-                      className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
-                      style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
-                    >
-                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 2} - Backs</div>
-                      <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4" style={{ direction: 'rtl' }}>
-                        {pageEmployees.map(employee => (
-                          <div key={`back-${employee.id}`} style={{ direction: 'ltr' }}>
-                            <EmployeeIdCardBack employee={employee} variant={employee.designation.includes('শিক্ষক') ? 'purple' : 'teal'} />
-                          </div>
-                        ))}
+                        {pageEmployees.flatMap(employee => [
+                          <EmployeeIdCardFront key={`front-${employee.id}`} employee={employee} variant={employee.designation.includes('শিক্ষক') ? 'purple' : 'teal'} />,
+                          <EmployeeIdCardBack key={`back-${employee.id}`} employee={employee} variant={employee.designation.includes('শিক্ষক') ? 'purple' : 'teal'} />
+                        ])}
                       </div>
                     </div>
                   </div>
