@@ -1,5 +1,7 @@
+"use client"
+
 import React from "react"
-import { type Student } from "@/lib/store"
+import { type Student, useSchoolStore } from "@/lib/store"
 import { User } from "lucide-react"
 
 interface IdCardTemplateProps {
@@ -26,13 +28,17 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
         <div className="absolute top-[-10px] right-[-50px] w-[200px] h-[100px] bg-black/10 -rotate-12"></div>
         <div className="absolute bottom-0 right-0 w-[100px] h-[100px] bg-white/10 rounded-tl-full"></div>
 
-        {/* Header */}
-        <div className="relative z-10 flex flex-col items-center pt-4">
-          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
-            <span className={`font-bold text-[10px] ${accentText}`}>AG</span>
-          </div>
-          <h2 className="text-white font-bold text-xs tracking-wider uppercase m-0 leading-tight">Anti-Gravity</h2>
-          <p className="text-white/80 text-[6px] tracking-[0.2em] uppercase m-0">Academy</p>
+        {/* Header: use institute profile if available */}
+        <div className="relative z-10 flex flex-col items-center pt-3">
+          {useSchoolStore().instituteProfile?.logo ? (
+            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-8 h-8 rounded-full object-cover mb-1 shadow-sm" />
+          ) : (
+            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
+              <span className={`font-bold text-[10px] ${accentText}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>
+            </div>
+          )}
+          <h2 className="text-white font-bold text-xs tracking-wider uppercase m-0 leading-tight">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
+          <p className="text-white/80 text-[6px] tracking-[0.2em] uppercase m-0">{useSchoolStore().instituteProfile?.address || 'Academy'}</p>
         </div>
       </div>
 
@@ -109,7 +115,7 @@ export function IdCardBack({ student, variant = "blue", className = "" }: IdCard
 
       <div className="relative z-10 flex flex-col h-full p-5">
         <div className="text-white/90 text-[7px] space-y-2 mt-4 text-justify leading-relaxed">
-          <p>• This card is the property of Anti-Gravity Academy and must be returned upon request.</p>
+          <p>• This card is the property of {useSchoolStore().instituteProfile?.name || 'the institution'} and must be returned upon request.</p>
           <p>• If found, please return to the nearest school authority or contact the administration.</p>
           <p>• This card is non-transferable and must be worn visible at all times within the campus.</p>
         </div>
@@ -129,11 +135,15 @@ export function IdCardBack({ student, variant = "blue", className = "" }: IdCard
         </div>
 
         <div className="mt-auto flex flex-col items-center pb-2">
-          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
-            <span className={`font-bold text-[8px] ${isRed ? "text-red-700" : "text-blue-800"}`}>AG</span>
-          </div>
-          <h2 className="text-white font-bold text-[10px] tracking-wider uppercase m-0 leading-none">Anti-Gravity</h2>
-          <p className="text-white/60 text-[5px] tracking-[0.2em] uppercase mt-1">Academy</p>
+          {useSchoolStore().instituteProfile?.logo ? (
+            <img src={useSchoolStore().instituteProfile.logo} alt={useSchoolStore().instituteProfile.name} className="w-5 h-5 rounded-full mb-1 shadow-sm" />
+          ) : (
+            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm">
+              <span className={`font-bold text-[8px] ${isRed ? "text-red-700" : "text-blue-800"}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>
+            </div>
+          )}
+          <h2 className="text-white font-bold text-[10px] tracking-wider uppercase m-0 leading-none">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
+          <p className="text-white/60 text-[5px] tracking-[0.2em] uppercase mt-1">{useSchoolStore().instituteProfile?.address || ''}</p>
         </div>
       </div>
     </div>
