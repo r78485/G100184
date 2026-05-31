@@ -1,3 +1,4 @@
+"use client"
 import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Plus, FileQuestion, Download, Eye, Edit, Trash2, Printer } from "lucide-react"

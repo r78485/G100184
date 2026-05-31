@@ -120,7 +120,7 @@ export interface Question {
   subjectId: string
   classId: string
   chapter: string
-  type: 'mcq' | 'short' | 'descriptive'
+  type: 'mcq' | 'short' | 'descriptive' | 'long' | 'fill'
   question: string
   options: string[]
   correctAnswer: string
@@ -263,7 +263,7 @@ export interface MarksGrading {
 }
 
 export interface ThemeLanguage {
-  theme: 'light' | 'dark'
+  theme: 'light' | 'dark' | 'system'
   language: 'bn' | 'en'
 }
 
@@ -283,7 +283,7 @@ const sampleStudents: Student[] = [
     nationality: 'Bangladeshi',
     nidOrBirthCert: '1234567890123',
     address: 'গ্রাম: নিশানবাড়িয়া, বরগুনা সদর',
-    classId: '1',
+    classId: '6',
     section: 'A',
     roll: 1,
     registrationNo: '2024001001',
@@ -307,7 +307,7 @@ const sampleStudents: Student[] = [
     nationality: 'Bangladeshi',
     nidOrBirthCert: '1234567890124',
     address: 'গ্রাম: আংগারজুর, বরগুনা সদর',
-    classId: '1',
+    classId: '6',
     section: 'A',
     roll: 2,
     registrationNo: '2024001002',
@@ -363,20 +363,20 @@ const sampleClasses: ClassInfo[] = [
 ];
 
 const sampleSubjects: Subject[] = [
-  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '2', name: 'English', code: 'ENG101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '3', name: 'গণিত', code: 'MAT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
-  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 50, bookUrl: '' },
+  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '6', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '2', name: 'English', code: 'ENG101', classId: '6', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '3', name: 'গণিত', code: 'MAT101', classId: '6', teacherId: '1', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '6', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '6', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '6', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '6', teacherId: '1', type: 'compulsory', marks: 50, bookUrl: '' },
 ]
 
 const sampleQuestions: Question[] = [
   {
     id: '1',
     subjectId: '1',
-    classId: '1',
+    classId: '6',
     chapter: 'অধ্যায় ১',
     type: 'mcq',
     question: 'বাংলা ভাষার জন্ম কোন ভাষা থেকে?',
@@ -388,7 +388,7 @@ const sampleQuestions: Question[] = [
   {
     id: '2',
     subjectId: '3',
-    classId: '1',
+    classId: '6',
     chapter: 'অধ্যায় ১',
     type: 'mcq',
     question: '২ + ২ = ?',
@@ -400,7 +400,7 @@ const sampleQuestions: Question[] = [
   {
     id: '3',
     subjectId: '1',
-    classId: '1',
+    classId: '6',
     chapter: 'অধ্যায় ২',
     type: 'short',
     question: 'বাংলা সাহিত্যের প্রাচীনতম নিদর্শন কী?',
@@ -412,7 +412,7 @@ const sampleQuestions: Question[] = [
   {
     id: '4',
     subjectId: '3',
-    classId: '1',
+    classId: '6',
     chapter: 'অধ্যায় ৩',
     type: 'descriptive',
     question: 'পিথাগোরাসের উপপাদ্য ব্যাখ্যা কর এবং একটি উদাহরণ দাও।',
@@ -433,7 +433,7 @@ const initialInstituteProfile: InstituteProfile = {
   email: "school100184@gmail.com",
   website: "",
   address: "বরগুনা সদর, বরগুনা",
-  logo: ""
+  logo: "/images/logo.png"
 }
 
 const initialFeeParticulars: FeeParticular[] = [

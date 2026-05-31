@@ -45,7 +45,7 @@ export default function EmployeesPage() {
     salary: 0,
     address: "",
     photo: "",
-    status: "active" as const,
+    status: "active" as "active" | "inactive",
   })
 
   const resetForm = () => {

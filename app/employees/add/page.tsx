@@ -35,7 +35,7 @@ export default function AddEmployeePage() {
     salary: 0,
     address: "",
     photo: "",
-    status: "active" as const,
+    status: "active" as "active" | "inactive",
   })
 
   const handleSubmit = (e: React.FormEvent) => {

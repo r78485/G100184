@@ -56,7 +56,7 @@ export default function QuestionBankPage() {
   const [formData, setFormData] = useState({
     classId: "",
     subjectId: "",
-    type: "mcq" as "mcq" | "short" | "long" | "fill",
+    type: "mcq" as "mcq" | "short" | "long" | "fill" | "descriptive",
     question: "",
     options: ["", "", "", ""],
     correctAnswer: "",

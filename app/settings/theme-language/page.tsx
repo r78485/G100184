@@ -50,24 +50,24 @@ export default function ThemeLanguagePage() {
 
             <div className="grid grid-cols-3 gap-4 mb-8">
               <button 
-                onClick={() => setLocalState(prev => ({...prev, theme: 'Light'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Light' || localState.theme === 'light' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                onClick={() => setLocalState(prev => ({...prev, theme: 'light'}))}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'light' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Sun className={`w-6 h-6 ${localState.theme === 'Light' || localState.theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <Sun className={`w-6 h-6 ${localState.theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
                 <span className="text-sm font-medium">{t("Light")}</span>
               </button>
               <button 
-                onClick={() => setLocalState(prev => ({...prev, theme: 'Dark'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'Dark' || localState.theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                onClick={() => setLocalState(prev => ({...prev, theme: 'dark'}))}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Moon className={`w-6 h-6 ${localState.theme === 'Dark' || localState.theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <Moon className={`w-6 h-6 ${localState.theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
                 <span className="text-sm font-medium">{t("Dark")}</span>
               </button>
               <button 
-                onClick={() => setLocalState(prev => ({...prev, theme: 'System'}))}
-                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'System' || localState.theme === 'system' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                onClick={() => setLocalState(prev => ({...prev, theme: 'system'}))}
+                className={`flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-xl transition-all ${localState.theme === 'system' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
               >
-                <Monitor className={`w-6 h-6 ${localState.theme === 'System' || localState.theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <Monitor className={`w-6 h-6 ${localState.theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
                 <span className="text-sm font-medium">{t("System")}</span>
               </button>
             </div>

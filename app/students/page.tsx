@@ -71,7 +71,7 @@ export default function StudentsPage() {
     admissionDate: new Date().toISOString().split("T")[0],
     previousSchool: "",
     photo: "",
-    status: "active" as const,
+    status: "active" as "active" | "inactive",
   })
 
   const resetForm = () => {
