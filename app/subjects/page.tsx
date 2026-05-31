@@ -61,19 +61,20 @@ export default function SubjectsPage() {
         name: '',
         code: '',
         classId: activeTab !== "all" ? activeTab : (classes[0]?.id || ''),
-        type: 'compulsory',
+        type: activeTab !== "all" ? 'compulsory' : 'compulsory',
         marks: 100,
-        pdfUrl: ''
+        pdfUrl: '',
+        bookUrl: ''
       })
     }
     setIsModalOpen(true)
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'pdfUrl' | 'bookUrl') => {
     const file = e.target.files?.[0]
     if (file) {
       const fakeUrl = URL.createObjectURL(file)
-      setFormData(prev => ({ ...prev, pdfUrl: fakeUrl }))
+      setFormData(prev => ({ ...prev, [field]: fakeUrl }))
       toast.success(`File ${file.name} attached!`)
     }
   }
@@ -162,7 +163,7 @@ export default function SubjectsPage() {
                       <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ক্লাস</th>
                       <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">মার্কস</th>
                       <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">ধরন</th>
-                      <th className="text-center px-6 py-4 text-sm font-medium text-muted-foreground">পিডিএফ</th>
+                      <th className="text-center px-6 py-4 text-sm font-medium text-muted-foreground">সিলেবাস/বই</th>
                       <th className="text-right px-6 py-4 text-sm font-medium text-muted-foreground">অ্যাকশন</th>
                     </tr>
                   </thead>
@@ -188,19 +189,34 @@ export default function SubjectsPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-center">
-                            {subject.pdfUrl ? (
-                              <a 
-                                href={subject.pdfUrl} 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
-                                title="Download/View PDF"
-                              >
-                                <FileText className="w-4 h-4" />
-                              </a>
-                            ) : (
-                              <span className="text-xs text-muted-foreground">নেই</span>
-                            )}
+                            <div className="flex items-center justify-center gap-2">
+                              {subject.pdfUrl ? (
+                                <a 
+                                  href={subject.pdfUrl} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                                  title="View Syllabus PDF"
+                                >
+                                  <FileText className="w-4 h-4" />
+                                </a>
+                              ) : (
+                                <span className="text-xs text-muted-foreground" title="No Syllabus">এস/নেই</span>
+                              )}
+                              {subject.bookUrl ? (
+                                <a 
+                                  href={subject.bookUrl} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                                  title="View Main Book PDF"
+                                >
+                                  <BookOpen className="w-4 h-4" />
+                                </a>
+                              ) : (
+                                <span className="text-xs text-muted-foreground" title="No Book">বই/নেই</span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -297,21 +313,34 @@ export default function SubjectsPage() {
                     <label className="flex h-10 w-full cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-secondary/50 px-3 py-2 text-sm hover:bg-secondary transition-colors">
                       <span className="flex items-center gap-2">
                         <Download className="w-4 h-4" />
-                        {formData.pdfUrl ? 'PDF Attached' : 'Upload PDF'}
+                        {formData.pdfUrl ? 'PDF Attached' : 'Upload Syllabus'}
                       </span>
                       <input 
                         type="file" 
                         accept="application/pdf"
                         className="hidden" 
-                        onChange={handleFileChange}
+                        onChange={(e) => handleFileChange(e, 'pdfUrl')}
                       />
                     </label>
                   </div>
-                  {formData.pdfUrl && (
-                     <p className="text-xs text-muted-foreground break-all">
-                       File link is attached
-                     </p>
-                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2 border-t pt-4 mt-2">
+                <label className="text-sm font-medium text-primary">মূল বই আপলোড (PDF) - <span className="text-muted-foreground font-normal">অটো প্রশ্ন তৈরির জন্য</span></label>
+                <div className="flex gap-2">
+                  <label className="flex h-12 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors">
+                    <span className="flex items-center gap-2 font-medium text-primary">
+                      <BookOpen className="w-5 h-5" />
+                      {formData.bookUrl ? 'বই আপলোড করা হয়েছে' : 'বইয়ের PDF ফাইল আপলোড করুন'}
+                    </span>
+                    <input 
+                      type="file" 
+                      accept="application/pdf"
+                      className="hidden" 
+                      onChange={(e) => handleFileChange(e, 'bookUrl')}
+                    />
+                  </label>
                 </div>
               </div>
             </div>

@@ -66,6 +66,7 @@ export interface Subject {
   teacherId: string
   type: 'compulsory' | 'optional' | 'group'
   pdfUrl?: string
+  bookUrl?: string
   marks?: number
 }
 
@@ -138,6 +139,28 @@ export interface Exam {
   totalMarks: number
   passingMarks: number
   type: 'term' | 'class-test' | 'final'
+}
+
+export interface GeneratedQuestion {
+  id: string
+  type: 'cq' | 'mcq'
+  text: string
+  options?: string[]
+  answer?: string
+  marks: number
+}
+
+export interface GeneratedPaper {
+  id: string
+  subjectId: string
+  classId: string
+  examName: string
+  duration: string
+  totalMarks: number
+  status: 'Draft' | 'Ready' | 'Printed'
+  createdBy: string
+  createdAt: string
+  questions: GeneratedQuestion[]
 }
 
 export interface Result {
@@ -340,13 +363,13 @@ const sampleClasses: ClassInfo[] = [
 ]
 
 const sampleSubjects: Subject[] = [
-  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
-  { id: '2', name: 'English', code: 'ENG101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
-  { id: '3', name: 'গণিত', code: 'MAT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 100 },
-  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
-  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
-  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100 },
-  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 50 },
+  { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '2', name: 'English', code: 'ENG101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '3', name: 'গণিত', code: 'MAT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '4', name: 'বিজ্ঞান', code: 'SCI101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '5', name: 'সমাজ বিজ্ঞান', code: 'SOC101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '6', name: 'ধর্ম', code: 'REL101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
+  { id: '7', name: 'তথ্য ও যোগাযোগ প্রযুক্তি', code: 'ICT101', classId: '1', teacherId: '1', type: 'compulsory', marks: 50, bookUrl: '' },
 ]
 
 const sampleQuestions: Question[] = [
@@ -466,6 +489,7 @@ interface SchoolStore {
   results: Result[]
   certificates: Certificate[]
   notices: Notice[]
+  generatedPapers: GeneratedPaper[]
   
   // General Settings
   instituteProfile: InstituteProfile
@@ -538,6 +562,11 @@ interface SchoolStore {
   updateNotice: (id: string, notice: Partial<Notice>) => void
   deleteNotice: (id: string) => void
 
+  // Generated Paper Actions
+  addGeneratedPaper: (paper: Omit<GeneratedPaper, 'id' | 'createdAt'>) => void
+  updateGeneratedPaper: (id: string, paper: Partial<GeneratedPaper>) => void
+  deleteGeneratedPaper: (id: string) => void
+
   // General Settings Actions
   updateInstituteProfile: (profile: Partial<InstituteProfile>) => void
   
@@ -589,6 +618,7 @@ export const useSchoolStore = create<SchoolStore>()(
       results: [],
       certificates: [],
       notices: [],
+      generatedPapers: [],
       
       // General Settings Initial Data
       instituteProfile: initialInstituteProfile,
@@ -736,6 +766,17 @@ export const useSchoolStore = create<SchoolStore>()(
         notices: state.notices.filter((n) => n.id !== id)
       })),
       
+      // Generated Paper Actions
+      addGeneratedPaper: (paper) => set((state) => ({
+        generatedPapers: [...state.generatedPapers, { ...paper, id: generateId(), createdAt: new Date().toISOString() }]
+      })),
+      updateGeneratedPaper: (id, paper) => set((state) => ({
+        generatedPapers: state.generatedPapers.map((p) => p.id === id ? { ...p, ...paper } : p)
+      })),
+      deleteGeneratedPaper: (id) => set((state) => ({
+        generatedPapers: state.generatedPapers.filter((p) => p.id !== id)
+      })),
+
       // General Settings Actions
       updateInstituteProfile: (profile) => set((state) => ({
         instituteProfile: { ...state.instituteProfile, ...profile }
