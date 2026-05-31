@@ -491,6 +491,12 @@ interface SchoolStore {
   notices: Notice[]
   generatedPapers: GeneratedPaper[]
   
+  // Auth Settings
+  isLoggedIn: boolean
+  userRole: 'admin' | 'student' | 'teacher' | null
+  loginUser: (role: 'admin' | 'student' | 'teacher', emailOrUsername: string) => void
+  logoutUser: () => void
+
   // General Settings
   instituteProfile: InstituteProfile
   feeParticulars: FeeParticular[]
@@ -620,6 +626,10 @@ export const useSchoolStore = create<SchoolStore>()(
       notices: [],
       generatedPapers: [],
       
+      // Auth Initial Data
+      isLoggedIn: false,
+      userRole: null,
+
       // General Settings Initial Data
       instituteProfile: initialInstituteProfile,
       feeParticulars: initialFeeParticulars,
@@ -849,9 +859,42 @@ export const useSchoolStore = create<SchoolStore>()(
       updateThemeLanguage: (themeLang) => set((state) => ({
         themeLanguage: { ...state.themeLanguage, ...themeLang }
       })),
+      
+      loginUser: (role, emailOrUsername) => set(() => ({
+        isLoggedIn: true,
+        userRole: role,
+        accountSetting: role === 'admin' ? {
+          fullName: "Super Admin",
+          phone: "+880 1711-000000",
+          email: emailOrUsername || "admin@ghjs.edu.bd",
+          avatar: ""
+        } : role === 'teacher' ? {
+          fullName: "Teacher User",
+          phone: "+880 1711-111111",
+          email: emailOrUsername || "teacher@ghjs.edu.bd",
+          avatar: ""
+        } : {
+          fullName: "Student User",
+          phone: "+880 1711-222222",
+          email: emailOrUsername || "student@ghjs.edu.bd",
+          avatar: ""
+        }
+      })),
+      
+      logoutUser: () => set(() => ({
+        isLoggedIn: false,
+        userRole: null,
+        accountSetting: {
+          fullName: "Guest User",
+          phone: "",
+          email: "",
+          avatar: ""
+        }
+      })),
     }),
     {
       name: 'school-management-store',
+      skipHydration: true,
     }
   )
 )
