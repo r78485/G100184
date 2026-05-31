@@ -147,7 +147,11 @@ export default function FeesStructurePage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">ফ্রিকোয়েন্সি (Frequency)</label>
                 <select name="frequency" value={formData.frequency} onChange={handleChange} className="w-full bg-secondary border border-border rounded-lg px-4 py-2 text-sm text-foreground">
+                  <option value="Daily">দৈনিক (Daily)</option>
+                  <option value="Weekly">সাপ্তাহিক (Weekly)</option>
                   <option value="Monthly">মাসিক (Monthly)</option>
+                  <option value="Quarterly">ত্রৈমাসিক (Quarterly)</option>
+                  <option value="Half-yearly">অর্ধবার্ষিকি (Half-yearly)</option>
                   <option value="Yearly">বাৎসরিক (Yearly)</option>
                   <option value="One-time">এককালীন (One-time)</option>
                 </select>
