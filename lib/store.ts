@@ -357,10 +357,10 @@ const sampleEmployees: Employee[] = [
 ]
 
 const sampleClasses: ClassInfo[] = [
-  { id: '1', name: 'Six', section: 'A', capacity: 40, classTeacherId: '1' },
-  { id: '2', name: 'Seven', section: 'A', capacity: 40, classTeacherId: '2' },
-  { id: '3', name: 'Eight', section: 'A', capacity: 40, classTeacherId: '1' },
-]
+  { id: '6', name: 'Six', section: 'A', capacity: 40, classTeacherId: '1' },
+  { id: '7', name: 'Seven', section: 'A', capacity: 40, classTeacherId: '2' },
+  { id: '8', name: 'Eight', section: 'A', capacity: 40, classTeacherId: '1' },
+];
 
 const sampleSubjects: Subject[] = [
   { id: '1', name: 'বাংলা', code: 'BAN101', classId: '1', teacherId: '2', type: 'compulsory', marks: 100, bookUrl: '' },
