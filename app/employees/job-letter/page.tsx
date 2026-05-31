@@ -16,7 +16,7 @@ import {
 import { useSchoolStore } from "@/lib/store"
 
 export default function JobLetterPage() {
-  const { employees } = useSchoolStore()
+  const { employees, instituteProfile } = useSchoolStore()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null)
   const [letterType, setLetterType] = useState("appointment")
@@ -48,10 +48,10 @@ export default function JobLetterPage() {
             <p>To,<br /><strong>{employee.nameEn || employee.name}</strong><br />{employee.address}</p>
             <p><strong>Subject: Offer of Employment for the position of {employee.designation}</strong></p>
             <p>Dear {employee.nameEn || employee.name},</p>
-            <p>We are pleased to offer you the position of <strong>{employee.designation}</strong> in the <strong>{employee.department}</strong> department at EduManage School. Your skills and experience will be an ideal fit for our institution.</p>
+            <p>We are pleased to offer you the position of <strong>{employee.designation}</strong> in the <strong>{employee.department}</strong> department at {instituteProfile?.name || "EduManage School"}. Your skills and experience will be an ideal fit for our institution.</p>
             <p>Your expected joining date is <strong>{employee.joiningDate}</strong>. Your monthly consolidated salary will be <strong>BDT {employee.salary.toLocaleString()}</strong>.</p>
             <p>Please review this offer letter and sign it to confirm your acceptance. We look forward to welcoming you to our team.</p>
-            <p>Sincerely,<br /><br /><strong>Principal / HR Head</strong><br />EduManage School</p>
+            <p>Sincerely,<br /><br /><strong>Principal / HR Head</strong><br />{instituteProfile?.name || "EduManage School"}</p>
           </div>
         </>
       )
@@ -68,7 +68,7 @@ export default function JobLetterPage() {
             <p>To,<br /><strong>{employee.nameEn || employee.name}</strong><br />{employee.address}</p>
             <p><strong>Subject: Appointment Letter for the position of {employee.designation}</strong></p>
             <p>Dear {employee.nameEn || employee.name},</p>
-            <p>We are pleased to appoint you as <strong>{employee.designation}</strong> in the <strong>{employee.department}</strong> department at EduManage School, effective from <strong>{employee.joiningDate}</strong>.</p>
+            <p>We are pleased to appoint you as <strong>{employee.designation}</strong> in the <strong>{employee.department}</strong> department at {instituteProfile?.name || "EduManage School"}, effective from <strong>{employee.joiningDate}</strong>.</p>
             <div className="grid grid-cols-2 gap-4 my-6 bg-slate-50 p-6 rounded-lg print:bg-transparent print:border">
               <p><strong>Employee ID:</strong> {employee.id}</p>
               <p><strong>Designation:</strong> {employee.designation}</p>
@@ -79,7 +79,7 @@ export default function JobLetterPage() {
             </div>
             <p>You will be governed by the rules and regulations of the school. We expect you to perform your duties with diligence and maintain the highest standard of professionalism.</p>
             <p>Wishing you a successful career with us.</p>
-            <p>Authorized Signatory,<br /><br /><strong>Principal</strong><br />EduManage School</p>
+            <p>Authorized Signatory,<br /><br /><strong>Principal</strong><br />{instituteProfile?.name || "EduManage School"}</p>
           </div>
         </>
       )
@@ -93,7 +93,7 @@ export default function JobLetterPage() {
           </div>
           <div className="space-y-6 text-base leading-relaxed">
             <p>Date: {employee.joiningDate}</p>
-            <p>To,<br />The Principal,<br />EduManage School</p>
+            <p>To,<br />The Principal,<br />{instituteProfile?.name || "EduManage School"}</p>
             <p><strong>Subject: Joining Report as {employee.designation}</strong></p>
             <p>Respected Sir/Madam,</p>
             <p>With reference to your appointment letter dated {employee.joiningDate}, I am pleased to report for duty as <strong>{employee.designation}</strong> in the <strong>{employee.department}</strong> department on the forenoon/afternoon of <strong>{employee.joiningDate}</strong>.</p>
@@ -191,9 +191,12 @@ export default function JobLetterPage() {
               {employee ? (
                 <div className="p-8 border rounded-lg bg-white text-black min-h-[800px] print:border-none print:p-0">
                   <div className="text-center mb-8 border-b pb-6">
-                    <h1 className="text-3xl font-bold mb-2">EduManage School</h1>
-                    <p className="text-sm">123 Education Street, Dhaka, Bangladesh</p>
-                    <p className="text-sm">Phone: 01XXX-XXXXXX | Email: info@edumanage.com</p>
+                    {instituteProfile?.logo && (
+                      <img src={instituteProfile.logo} alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
+                    )}
+                    <h1 className="text-3xl font-bold mb-2">{instituteProfile?.name || "EduManage School"}</h1>
+                    <p className="text-sm">{instituteProfile?.address || "123 Education Street, Dhaka, Bangladesh"}</p>
+                    <p className="text-sm">Phone: {instituteProfile?.phone || "01XXX-XXXXXX"} | Email: {instituteProfile?.email || "info@edumanage.com"}</p>
                   </div>
                   
                   {renderLetterContent()}

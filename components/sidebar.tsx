@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "@/lib/i18n"
+import { useSchoolStore } from "@/lib/store"
 import {
   LayoutDashboard,
   Settings,
@@ -121,6 +122,7 @@ interface SidebarProps {
 export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   const pathname = usePathname()
   const { t } = useTranslation()
+  const { instituteProfile } = useSchoolStore()
   const [mounted, setMounted] = useState(false)
   
   // Only open General Settings by default if we are inside a settings route
@@ -161,14 +163,25 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
-          <School className="w-6 h-6 text-primary-foreground" />
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border overflow-hidden">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary shrink-0">
+          {instituteProfile?.logo ? (
+            <img src={instituteProfile.logo} alt="Logo" className="w-full h-full object-contain rounded-lg" />
+          ) : (
+            <School className="w-6 h-6 text-primary-foreground" />
+          )}
         </div>
         {!collapsed && (
-          <div className="flex flex-col">
-            <span className="font-semibold text-sidebar-foreground">EduManage</span>
-            <span className="text-xs text-muted-foreground">School Management</span>
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-sidebar-foreground truncate text-sm" title={instituteProfile?.name || "School Name"}>
+              {instituteProfile?.name || "Institute Name"}
+            </span>
+            <span className="text-[10px] text-muted-foreground truncate" title={instituteProfile?.address}>
+              {instituteProfile?.address || "Address"}
+            </span>
+            <span className="text-[10px] text-muted-foreground truncate">
+              EIIN: {instituteProfile?.eiin || "N/A"} | Est: {instituteProfile?.establishedYear || "N/A"}
+            </span>
           </div>
         )}
       </div>

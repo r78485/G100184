@@ -402,14 +402,14 @@ const sampleQuestions: Question[] = [
 
 // Settings Sample Data
 const initialInstituteProfile: InstituteProfile = {
-  name: "GHJS High School",
-  eiin: "123456",
-  establishedYear: "1995",
+  name: "গাজী মাহমুদ নিম্ন মাধ্যমিক বিদ্যালয়",
+  eiin: "১০০১৮৪",
+  establishedYear: "১৯৮৩",
   principalName: "মোঃ আব্দুর রহমান",
-  phone: "+880 1711-123456",
-  email: "info@ghjs.edu.bd",
-  website: "https://www.ghjs.edu.bd",
-  address: "স্কুল রোড, ধানমন্ডি, ঢাকা, বাংলাদেশ",
+  phone: "০১৩০৯১০০১৮৪",
+  email: "school100184@gmail.com",
+  website: "",
+  address: "বরগুনা সদর, বরগুনা",
   logo: ""
 }
 

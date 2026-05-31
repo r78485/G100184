@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'EduManage - স্কুল ম্যানেজমেন্ট সিস্টেম',
+  title: 'গাজী মাহমুদ নিম্ন মাধ্যমিক বিদ্যালয় - স্কুল ম্যানেজমেন্ট সিস্টেম',
   description: 'Complete School Management System for managing students, teachers, fees, attendance, exams and more',
   generator: 'v0.app',
   icons: {

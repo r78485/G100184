@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { useSchoolStore } from "@/lib/store"
 
 export default function AdmissionLetterPage() {
-  const { students } = useSchoolStore()
+  const { students, instituteProfile } = useSchoolStore()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null)
 
@@ -93,9 +93,12 @@ export default function AdmissionLetterPage() {
               {student ? (
                 <div className="p-8 border rounded-lg bg-white text-black min-h-[600px] print:border-none print:p-0">
                   <div className="text-center mb-8 border-b pb-6">
-                    <h1 className="text-3xl font-bold mb-2">EduManage School</h1>
-                    <p className="text-sm">123 Education Street, Dhaka, Bangladesh</p>
-                    <p className="text-sm">Phone: 01XXX-XXXXXX | Email: info@edumanage.com</p>
+                    {instituteProfile?.logo && (
+                      <img src={instituteProfile.logo} alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
+                    )}
+                    <h1 className="text-3xl font-bold mb-2">{instituteProfile?.name || "EduManage School"}</h1>
+                    <p className="text-sm">{instituteProfile?.address || "123 Education Street, Dhaka, Bangladesh"}</p>
+                    <p className="text-sm">Phone: {instituteProfile?.phone || "01XXX-XXXXXX"} | Email: {instituteProfile?.email || "info@edumanage.com"}</p>
                   </div>
                   
                   <div className="text-center mb-8">

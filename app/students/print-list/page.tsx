@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 
 export default function PrintBasicListPage() {
-  const { students, classes } = useSchoolStore()
+  const { students, classes, instituteProfile } = useSchoolStore()
   const [selectedClass, setSelectedClass] = useState<string>("all")
 
   const filteredStudents = students.filter(
@@ -78,7 +78,7 @@ export default function PrintBasicListPage() {
           <CardContent className="print:p-0">
             {/* Print Header */}
             <div className="hidden print:block text-center mb-6">
-              <h1 className="text-2xl font-bold">EduManage School</h1>
+              <h1 className="text-2xl font-bold">{instituteProfile?.name || "EduManage School"}</h1>
               <p>শিক্ষার্থীর তালিকা</p>
               <p className="text-sm mt-1">
                 শ্রেণি: {selectedClass === "all" ? "সকল শ্রেণি" : classes.find(c => c.id === selectedClass)?.name}
