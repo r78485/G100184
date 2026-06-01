@@ -894,7 +894,6 @@ export const useSchoolStore = create<SchoolStore>()(
     }),
     {
       name: 'school-management-store',
-      skipHydration: true,
     }
   )
 )
