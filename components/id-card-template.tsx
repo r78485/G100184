@@ -13,16 +13,19 @@ interface IdCardTemplateProps {
 export function IdCardFront({ student, variant = "blue", className = "" }: IdCardTemplateProps) {
   const isRed = variant === "red"
   
-  const bgClass = isRed 
-    ? "bg-gradient-to-br from-red-700 to-red-600" 
-    : "bg-gradient-to-br from-blue-800 to-blue-600"
-    
+  const bgColor = isRed ? '#b91c1c' : '#1e40af' // red-700 / blue-800
   const accentText = isRed ? "text-red-700" : "text-blue-800"
 
   return (
-    <div className={`relative w-[216px] h-[344px] bg-white overflow-hidden shadow-sm flex flex-col font-sans ${className}`} style={{ pageBreakInside: 'avoid' }}>
+    <div className={`relative w-[216px] h-[344px] overflow-hidden shadow-sm flex flex-col font-sans ${className} id-card-front id-card-front-${variant}`} style={{ pageBreakInside: 'avoid', backgroundColor: bgColor }}>
       {/* Top Background Section */}
-      <div className={`relative h-[150px] w-full ${bgClass} overflow-hidden`} style={{ clipPath: "polygon(0 0, 100% 0, 100% 80%, 0% 100%)" }}>
+      <div
+        className="relative h-[150px] w-full overflow-hidden"
+        style={{
+          clipPath: "polygon(0 0, 100% 0, 100% 80%, 0% 100%)",
+          background: `linear-gradient(to bottom right, ${isRed ? '#ef4444' : '#1e40af'}, ${bgColor})`
+        }}
+      >
         {/* Abstract Overlays */}
         <div className="absolute top-[-20px] left-[-20px] w-[150px] h-[150px] bg-white/10 rotate-45 transform origin-top-left"></div>
         <div className="absolute top-[-10px] right-[-50px] w-[200px] h-[100px] bg-black/10 -rotate-12"></div>
@@ -37,8 +40,8 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
               <span className={`font-bold text-[10px] ${accentText}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>
             </div>
           )}
-          <h2 className="text-white font-bold text-xs tracking-wider uppercase m-0 leading-tight">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
-          <p className="text-white/80 text-[6px] tracking-[0.2em] uppercase m-0">{useSchoolStore().instituteProfile?.address || 'Academy'}</p>
+          <h2 className="text-white font-bold text-xs uppercase m-0 leading-tight text-center px-2">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
+          <p className="text-white/90 text-[8px] uppercase m-0 text-center px-2 mt-0.5">{useSchoolStore().instituteProfile?.address || 'Academy'}</p>
         </div>
       </div>
 
@@ -46,7 +49,12 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
       <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-20">
         <div className="w-20 h-20 rounded-full border-[3px] border-white bg-slate-100 overflow-hidden shadow-sm flex items-center justify-center">
           {student.photo ? (
-            <img src={student.photo} alt={student.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
+            <img 
+              src={student.photo} 
+              alt={student.name}
+              className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+            />
           ) : (
             <User className="w-10 h-10 text-slate-400" />
           )}
@@ -99,16 +107,10 @@ export function IdCardFront({ student, variant = "blue", className = "" }: IdCar
 export function IdCardBack({ student, variant = "blue", className = "" }: IdCardTemplateProps) {
   const isRed = variant === "red"
   
-  const bgClass = isRed 
-    ? "bg-red-700" 
-    : "bg-blue-800"
-
-  const gradientClass = isRed
-    ? "bg-gradient-to-b from-red-800 to-red-600"
-    : "bg-gradient-to-b from-blue-900 to-blue-700"
+  const backBgColor = isRed ? '#991b1b' : '#1e3a8a'
 
   return (
-    <div className={`relative w-[216px] h-[344px] ${gradientClass} overflow-hidden shadow-sm flex flex-col font-sans ${className}`} style={{ pageBreakInside: 'avoid' }}>
+    <div className={`relative w-[216px] h-[344px] overflow-hidden shadow-sm flex flex-col font-sans ${className} id-card-back id-card-back-${variant}`} style={{ pageBreakInside: 'avoid', backgroundColor: backBgColor }}>
       {/* Abstract Overlays */}
       <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-white/5 rotate-45 transform origin-top-right"></div>
       <div className="absolute bottom-[-50px] left-[-50px] w-[200px] h-[200px] bg-black/5 rounded-full"></div>
@@ -142,8 +144,8 @@ export function IdCardBack({ student, variant = "blue", className = "" }: IdCard
               <span className={`font-bold text-[8px] ${isRed ? "text-red-700" : "text-blue-800"}`}>{(useSchoolStore().instituteProfile?.name || 'AG').slice(0,2).toUpperCase()}</span>
             </div>
           )}
-          <h2 className="text-white font-bold text-[10px] tracking-wider uppercase m-0 leading-none">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
-          <p className="text-white/60 text-[5px] tracking-[0.2em] uppercase mt-1">{useSchoolStore().instituteProfile?.address || ''}</p>
+          <h2 className="text-white font-bold text-[10px] uppercase m-0 leading-none text-center px-2">{useSchoolStore().instituteProfile?.name || 'Anti-Gravity'}</h2>
+          <p className="text-white/80 text-[7px] uppercase mt-1 text-center px-2">{useSchoolStore().instituteProfile?.address || ''}</p>
         </div>
       </div>
     </div>

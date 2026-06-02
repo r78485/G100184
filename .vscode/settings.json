@@ -1,3 +1,4 @@
 {
-    "editor.allowVariableFontsInAccessibilityMode": true
+    "editor.allowVariableFontsInAccessibilityMode": true,
+    "git.ignoreLimitWarning": true
 }

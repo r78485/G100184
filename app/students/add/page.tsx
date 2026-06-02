@@ -27,9 +27,12 @@ export default function AddStudentPage() {
     nameEn: "",
     fatherName: "",
     fatherNid: "",
+    fatherDob: "",
     motherName: "",
     motherNid: "",
+    motherDob: "",
     guardianPhone: "",
+    motherPhone: "",
     dateOfBirth: "",
     gender: "male",
     bloodGroup: "",
@@ -109,6 +112,14 @@ export default function AddStudentPage() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label>পিতার জন্ম তারিখ</Label>
+                  <Input
+                    type="date"
+                    value={formData.fatherDob}
+                    onChange={(e) => setFormData({ ...formData, fatherDob: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>মাতার নাম *</Label>
                   <Input
                     required
@@ -126,11 +137,27 @@ export default function AddStudentPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>অভিভাবকের মোবাইল *</Label>
+                  <Label>মাতার জন্ম তারিখ</Label>
+                  <Input
+                    type="date"
+                    value={formData.motherDob}
+                    onChange={(e) => setFormData({ ...formData, motherDob: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>পিতার মোবাইল *</Label>
                   <Input
                     required
                     value={formData.guardianPhone}
                     onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                    placeholder="01XXXXXXXXX"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>মাতার মোবাইল</Label>
+                  <Input
+                    value={formData.motherPhone}
+                    onChange={(e) => setFormData({ ...formData, motherPhone: e.target.value })}
                     placeholder="01XXXXXXXXX"
                   />
                 </div>

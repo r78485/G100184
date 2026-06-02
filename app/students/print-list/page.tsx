@@ -85,32 +85,58 @@ export default function PrintBasicListPage() {
               </p>
             </div>
 
-            <Table className="print:border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">ক্রমিক</TableHead>
-                  <TableHead>রেজিঃ নং</TableHead>
-                  <TableHead>নাম</TableHead>
-                  <TableHead>রোল</TableHead>
-                  {selectedClass === "all" && <TableHead>শ্রেণি</TableHead>}
-                  <TableHead>পিতার নাম</TableHead>
-                  <TableHead>মোবাইল</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudents.map((student, index) => (
-                  <TableRow key={student.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-mono">{student.registrationNo}</TableCell>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.roll}</TableCell>
-                    {selectedClass === "all" && <TableCell>{student.classId}</TableCell>}
-                    <TableCell>{student.fatherName}</TableCell>
-                    <TableCell>{student.guardianPhone}</TableCell>
+            <div className="overflow-x-auto">
+              <Table className="print:border text-[12px] print:text-[14px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]">ক্রমিক</TableHead>
+                    <TableHead>ছবি</TableHead>
+                    <TableHead>নাম ও জন্ম তারিখ</TableHead>
+                    <TableHead>পিতা, NID ও জন্ম তারিখ</TableHead>
+                    <TableHead>মাতা, NID ও জন্ম তারিখ</TableHead>
+                    <TableHead>জন্ম নিবন্ধন</TableHead>
+                    {selectedClass === "all" && <TableHead>শ্রেণি</TableHead>}
+                    <TableHead>রোল</TableHead>
+                    <TableHead>মোবাইল</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student, index) => (
+                    <TableRow key={student.id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        {student.photo ? (
+                          <img src={student.photo} alt={student.name} className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-500">N/A</div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <p className="font-medium">{student.name}</p>
+                        <p className="text-muted-foreground">DOB: {student.dateOfBirth}</p>
+                      </TableCell>
+                      <TableCell>
+                        <p className="font-medium">{student.fatherName}</p>
+                        <p className="text-muted-foreground">NID: {student.fatherNid || 'N/A'}</p>
+                        <p className="text-muted-foreground">DOB: {student.fatherDob || 'N/A'}</p>
+                      </TableCell>
+                      <TableCell>
+                        <p className="font-medium">{student.motherName}</p>
+                        <p className="text-muted-foreground">NID: {student.motherNid || 'N/A'}</p>
+                        <p className="text-muted-foreground">DOB: {student.motherDob || 'N/A'}</p>
+                      </TableCell>
+                      <TableCell>{student.nidOrBirthCert}</TableCell>
+                      {selectedClass === "all" && <TableCell>{student.classId}</TableCell>}
+                      <TableCell>{student.roll}</TableCell>
+                      <TableCell>
+                        <p>পিতা: {student.guardianPhone || 'N/A'}</p>
+                        <p>মাতা: {student.motherPhone || 'N/A'}</p>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
             
             {filteredStudents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">

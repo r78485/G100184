@@ -14,15 +14,12 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useSchoolStore } from "@/lib/store"
-import html2canvas from "html2canvas"
-import jsPDF from "jspdf"
 import { IdCardFront, IdCardBack } from "@/components/id-card-template"
 
 export default function IdCardsPage() {
   const { students, classes } = useSchoolStore()
   const [selectedClassForId, setSelectedClassForId] = useState<string>("all")
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
-  const classIdCardsRef = useRef<HTMLDivElement>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const classStudentsForId = students.filter(
@@ -42,46 +39,16 @@ export default function IdCardsPage() {
     effectiveStudents.slice(i * cardsPerPage, (i + 1) * cardsPerPage)
   )
 
-  const downloadClassIdCards = async () => {
-    if (!classIdCardsRef.current) return
-    
-    setIsGeneratingPdf(true)
-    try {
-      const pages = classIdCardsRef.current.querySelectorAll('.a4-page')
-      if (pages.length === 0) return
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      })
-
-      for (let i = 0; i < pages.length; i++) {
-        if (i > 0) pdf.addPage()
-        
-        const canvas = await html2canvas(pages[i] as HTMLElement, { 
-          scale: 2,
-          useCORS: true,
-          logging: false
-        })
-        
-        const imgData = canvas.toDataURL("image/png")
-        pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
-      }
-
-      const className = classes.find(c => c.id === selectedClassForId)?.name || 'All_Classes'
-      pdf.save(`Class_${className}_ID_Cards.pdf`)
-    } catch (error) {
-      console.error("Error generating PDF:", error)
-    } finally {
-      setIsGeneratingPdf(false)
-    }
+  const downloadClassIdCards = () => {
+    // We use a small timeout to let the UI update if needed, but here we just call print.
+    // The native print dialog allows saving as PDF perfectly.
+    window.print()
   }
 
   return (
     <DashboardLayout>
       <div className="space-y-6 flex flex-col h-[calc(100vh-2rem)]">
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 print:hidden">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
             <IdCard className="w-5 h-5 text-primary" />
           </div>
@@ -91,8 +58,8 @@ export default function IdCardsPage() {
           </div>
         </div>
         
-        <Card className="flex-1 flex flex-col overflow-hidden">
-          <CardHeader className="border-b shrink-0">
+        <Card className="flex-1 flex flex-col overflow-hidden print:border-none print:shadow-none">
+          <CardHeader className="border-b shrink-0 print:hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <CardTitle>আইডি কার্ড তৈরি</CardTitle>
@@ -132,25 +99,25 @@ export default function IdCardsPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-4 bg-slate-50 relative">
+          <CardContent className="flex-1 overflow-y-auto p-4 bg-slate-50 relative print:p-0 print:bg-white print:overflow-visible print:block">
             {classStudentsForId.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground absolute inset-0">
+              <div className="flex items-center justify-center h-full text-muted-foreground absolute inset-0 print:hidden">
                 এই শ্রেণিতে কোনো শিক্ষার্থী নেই
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-8 pb-8" ref={classIdCardsRef}>
+              <div className="flex flex-col items-center gap-8 pb-8 print:block print:pb-0 print:gap-0">
                 {a4Pages.map((pageStudents, pageIndex) => (
-                  <div key={`page-${pageIndex}`} className="flex flex-col gap-8">
+                  <div key={`page-${pageIndex}`} className="flex flex-col gap-8 print:block print:gap-0">
                     {/* Fronts Page */}
                     <div 
-                      className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
+                      className="a4-page bg-white shadow-md mx-auto relative p-[10mm] print:shadow-none print:m-0 print:break-after-page"
                       style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
                     >
-                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 1} - Fronts</div>
+                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400 print:hidden">Page {pageIndex * 2 + 1} - Fronts</div>
                       <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4">
                         {pageStudents.map(student => (
                           <div key={`front-wrap-${student.id}`} className="relative">
-                            <label className="absolute top-1 left-1 z-30 bg-white/80 rounded-full p-1">
+                            <label className="absolute top-1 left-1 z-30 bg-white/80 rounded-full p-1 print:hidden">
                               <input type="checkbox" className="w-4 h-4" checked={selectedIds.has(student.id)} onChange={(e) => {
                                 setSelectedIds(prev => {
                                   const next = new Set(prev)
@@ -168,10 +135,10 @@ export default function IdCardsPage() {
                     
                     {/* Backs Page */}
                     <div 
-                      className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
+                      className="a4-page bg-white shadow-md mx-auto relative p-[10mm] print:shadow-none print:m-0 print:break-after-page"
                       style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
                     >
-                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 2} - Backs</div>
+                      <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400 print:hidden">Page {pageIndex * 2 + 2} - Backs</div>
                       <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4" style={{ direction: 'rtl' }}>
                         {pageStudents.map(student => (
                           <div key={`back-${student.id}`} style={{ direction: 'ltr' }}>

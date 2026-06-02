@@ -123,3 +123,110 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles: force light, hide UI chrome, and improve table rendering */
+@media print {
+  /* Ensure browsers print colors as specified when possible */
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Prefer a light palette for printing regardless of dark mode */
+  :root, .dark {
+    --background: #ffffff !important;
+    --foreground: #000000 !important;
+    --card: #ffffff !important;
+    --card-foreground: #000000 !important;
+    --sidebar: #ffffff !important;
+    --sidebar-foreground: #000000 !important;
+    --border: #000000 !important;
+  }
+
+  /* Hide interactive chrome */
+  .print\:hidden, .no-print, header, aside, .hidden-print {
+    display: none !important;
+  }
+
+  /* Remove shadows and borders that don't print well */
+  .print\:shadow-none { box-shadow: none !important; }
+  .print\:border-none { border: none !important; }
+  .print\:p-0 { padding: 0 !important; }
+
+  /* Tables: ensure borders and readable text */
+  table { border-collapse: collapse !important; width: 100% !important; }
+  th, td { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+
+  /* Images: make sure they print and are not tinted by dark backgrounds */
+  img { -webkit-print-color-adjust: exact; color-adjust: exact; background: transparent !important; }
+
+  /* Expand content to full width when sidebar is hidden */
+  main { width: 100% !important; }
+
+  /* Force print color adjustments on all elements */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    -webkit-filter: none !important;
+    filter: none !important;
+  }
+
+  /* Utility overrides: ensure common Tailwind utility backgrounds/borders print */
+  .bg-primary, .bg-primary\/10, .bg-card, .bg-sidebar, .bg-secondary, .bg-slate-200 {
+    background-color: var(--card) !important;
+    color: var(--foreground) !important;
+  }
+
+  .text-muted-foreground, .text-muted-foreground * {
+    color: #444 !important;
+  }
+
+  /* Border utilities */
+  .border, .border-border, .print\:border-none {
+    border-color: #000 !important;
+  }
+}
+
+/* ID Card print accents: use borders/top-stripe so color appears even when backgrounds are disabled */
+@media print {
+  .id-card-front, .id-card-back {
+    background: #ffffff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  .id-card-front-red {
+    border-top: 36px solid #b91c1c !important;
+    border-left: 1px solid #000 !important;
+    border-right: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  .id-card-back-red {
+    border-top: 36px solid #991b1b !important;
+    border-left: 1px solid #000 !important;
+    border-right: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  .id-card-front-blue {
+    border-top: 36px solid #1e40af !important;
+    border-left: 1px solid #000 !important;
+    border-right: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  .id-card-back-blue {
+    border-top: 36px solid #1e3a8a !important;
+    border-left: 1px solid #000 !important;
+    border-right: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* Ensure header text remains visible */
+  .id-card-front h2, .id-card-back h2, .id-card-front p, .id-card-back p, .id-card-front span, .id-card-back span {
+    color: #000 !important;
+  }
+}

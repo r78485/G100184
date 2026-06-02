@@ -37,12 +37,26 @@ export default function AccountSettingsPage() {
   }
 
   const handleSaveProfile = () => {
-    if (!localState.fullName || !localState.email) {
-      toast.error("Name and Email are required!")
-      return
+    try {
+      if (!localState.fullName || !localState.email) {
+        toast.error("Name and Email are required!")
+        return
+      }
+      console.log('AccountSettings: saving', localState)
+      updateAccountSetting(localState)
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = localStorage.getItem('school-management-store')
+          console.log('localStorage[school-management-store] (truncated):', stored ? stored.slice(0, 200) : null)
+        } catch (e) {
+          console.error('localStorage read failed', e)
+        }
+      }
+      toast.success("Profile updated successfully!")
+    } catch (err) {
+      console.error('AccountSettings: save failed', err)
+      toast.error('Failed to update profile')
     }
-    updateAccountSetting(localState)
-    toast.success("Profile updated successfully!")
   }
 
   const handleUpdatePassword = () => {

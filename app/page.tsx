@@ -37,6 +37,8 @@ export default function DashboardPage() {
             change={lang === 'bn' ? "+12 এই মাসে" : "+12 this month"}
             changeType="positive"
             icon={Users}
+              href="/students"
+              showActions={false}
           />
           <StatCard
             title={t("Total Classes")}
@@ -44,6 +46,8 @@ export default function DashboardPage() {
             change="Play - 10"
             changeType="neutral"
             icon={GraduationCap}
+            href="/classes"
+            showActions={false}
           />
           <StatCard
             title={t("Teachers/Staff")}
@@ -51,6 +55,8 @@ export default function DashboardPage() {
             change={lang === 'bn' ? "+3 নতুন" : "+3 new"}
             changeType="positive"
             icon={UserCog}
+            href="/employees"
+            showActions={false}
           />
           <StatCard
             title={t("This Month's Income")}
@@ -58,6 +64,8 @@ export default function DashboardPage() {
             change={lang === 'bn' ? "+8% বৃদ্ধি" : "+8% increase"}
             changeType="positive"
             icon={Banknote}
+            href="/accounts"
+            showActions={false}
           />
           <StatCard
             title={t("Today's Attendance")}
@@ -65,6 +73,8 @@ export default function DashboardPage() {
             change={lang === 'bn' ? "1,175 জন" : "1,175 students"}
             changeType="positive"
             icon={CalendarCheck}
+            href="/attendance"
+            showActions={false}
           />
           <StatCard
             title={t("Total Subjects")}
@@ -72,6 +82,8 @@ export default function DashboardPage() {
             change={lang === 'bn' ? "সকল ক্লাসে" : "In all classes"}
             changeType="neutral"
             icon={BookOpen}
+            href="/subjects"
+            showActions={false}
           />
         </div>
 

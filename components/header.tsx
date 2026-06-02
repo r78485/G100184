@@ -35,7 +35,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-card border-b border-border">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-card border-b border-border print:hidden">
       {/* Search */}
       <div className="relative w-full max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
