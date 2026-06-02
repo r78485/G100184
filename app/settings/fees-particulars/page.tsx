@@ -100,10 +100,6 @@ export default function FeesParticularsPage() {
             <h1 className="text-2xl font-bold text-foreground">Fees Particulars</h1>
             <p className="text-muted-foreground">বিভিন্ন ধরনের ফি (যেমন: টিউশন ফি, ভর্তি ফি) তৈরি ও পরিচালনা করুন</p>
           </div>
-          <Button className="gap-2" onClick={handleReset}>
-            <Plus className="w-4 h-4" />
-            নতুন ফি যোগ করুন
-          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

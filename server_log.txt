@@ -1,0 +1,10 @@
+========================================== 
+LOCAL HOST STARTUP LOG 
+Date/Time: Mon 06/01/2026 13:03:12.07 
+========================================== 
+Checking Node version... 
+v25.8.1
+Checking package manager and starting... 
+Detected pnpm-lock.yaml. Starting with pnpm dev... 
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.

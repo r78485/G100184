@@ -40,7 +40,7 @@ export function EmployeeIdCardFront({ employee, variant = "teal", className = ""
       <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-20">
         <div className="w-20 h-20 rounded-full border-[3px] border-white bg-slate-100 overflow-hidden shadow-sm flex items-center justify-center">
           {employee.photo ? (
-            <img src={employee.photo} alt={employee.nameEn} className="w-full h-full object-cover" />
+            <img src={employee.photo} alt={employee.nameEn} className="w-full h-full object-cover" crossOrigin="anonymous" />
           ) : (
             <User className="w-10 h-10 text-slate-400" />
           )}
@@ -48,7 +48,7 @@ export function EmployeeIdCardFront({ employee, variant = "teal", className = ""
       </div>
 
       {/* Details Section */}
-      <div className="pt-12 px-4 pb-4 flex-1 flex flex-col items-center bg-slate-50/50">
+      <div className="pt-12 px-4 pb-4 h-[194px] flex flex-col items-center bg-slate-50/50">
         <h3 className="font-bold text-sm text-slate-800 uppercase text-center m-0">{employee.nameEn || employee.name}</h3>
         <p className={`text-[7px] font-semibold uppercase tracking-widest ${accentText} mb-3`}>{employee.designation}</p>
 

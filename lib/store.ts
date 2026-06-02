@@ -10,9 +10,12 @@ export interface Student {
   nameEn: string
   fatherName: string
   fatherNid?: string
+  fatherDob?: string
   motherName: string
   motherNid?: string
+  motherDob?: string
   guardianPhone: string
+  motherPhone?: string
   dateOfBirth: string
   gender: string
   bloodGroup: string
@@ -274,8 +277,11 @@ const sampleStudents: Student[] = [
     name: 'মোঃ রাফি আহমেদ',
     nameEn: 'Md. Rafi Ahmed',
     fatherName: 'মোঃ করিম উদ্দিন',
+    fatherDob: '1980-01-01',
     motherName: 'মোসাঃ ফাতেমা বেগম',
+    motherDob: '1985-05-10',
     guardianPhone: '01712345678',
+    motherPhone: '01712345679',
     dateOfBirth: '2010-05-15',
     gender: 'male',
     bloodGroup: 'B+',
@@ -298,8 +304,11 @@ const sampleStudents: Student[] = [
     name: 'ফাতিমা আক্তার',
     nameEn: 'Fatima Akter',
     fatherName: 'মোঃ জহির উদ্দিন',
+    fatherDob: '1978-02-15',
     motherName: 'মোসাঃ রহিমা খাতুন',
+    motherDob: '1982-11-20',
     guardianPhone: '01812345678',
+    motherPhone: '01812345679',
     dateOfBirth: '2010-08-20',
     gender: 'female',
     bloodGroup: 'A+',
@@ -493,9 +502,11 @@ interface SchoolStore {
   
   // Auth Settings
   isLoggedIn: boolean
-  userRole: 'admin' | 'student' | 'teacher' | null
-  loginUser: (role: 'admin' | 'student' | 'teacher', emailOrUsername: string) => void
+  userRole: 'admin' | 'student' | 'teacher' | 'employee' | 'parent' | null
+  token?: string
+  loginUser: (role: 'admin' | 'student' | 'teacher' | 'employee' | 'parent', emailOrUsername: string, token?: string, currentUserId?: string) => void
   logoutUser: () => void
+  currentUserId?: string
 
   // General Settings
   instituteProfile: InstituteProfile
@@ -860,30 +871,34 @@ export const useSchoolStore = create<SchoolStore>()(
         themeLanguage: { ...state.themeLanguage, ...themeLang }
       })),
       
-      loginUser: (role, emailOrUsername) => set(() => ({
+      loginUser: (role, emailOrUsername, token, currentUserId) => set(() => ({
         isLoggedIn: true,
         userRole: role,
+        // store token for possible API auth usage (optional)
+        token: token || '',
+        currentUserId: currentUserId || '',
         accountSetting: role === 'admin' ? {
-          fullName: "Super Admin",
-          phone: "+880 1711-000000",
-          email: emailOrUsername || "admin@ghjs.edu.bd",
-          avatar: ""
-        } : role === 'teacher' ? {
-          fullName: "Teacher User",
-          phone: "+880 1711-111111",
-          email: emailOrUsername || "teacher@ghjs.edu.bd",
-          avatar: ""
-        } : {
-          fullName: "Student User",
-          phone: "+880 1711-222222",
-          email: emailOrUsername || "student@ghjs.edu.bd",
-          avatar: ""
-        }
-      })),
+              fullName: "Super Admin",
+              phone: "+880 1711-000000",
+              email: emailOrUsername || "admin@ghjs.edu.bd",
+              avatar: ""
+            } : role === 'teacher' ? {
+              fullName: "Teacher User",
+              phone: "+880 1711-111111",
+              email: emailOrUsername || "teacher@ghjs.edu.bd",
+              avatar: ""
+            } : {
+              fullName: "Student User",
+              phone: "+880 1711-222222",
+              email: emailOrUsername || "student@ghjs.edu.bd",
+              avatar: ""
+            }
+          })),
       
       logoutUser: () => set(() => ({
         isLoggedIn: false,
         userRole: null,
+        token: '',
         accountSetting: {
           fullName: "Guest User",
           phone: "",
@@ -894,7 +909,6 @@ export const useSchoolStore = create<SchoolStore>()(
     }),
     {
       name: 'school-management-store',
-      skipHydration: true,
     }
   )
 )

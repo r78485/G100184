@@ -20,33 +20,78 @@ export default function LoginPage() {
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    
+
     if (!username || !password) {
       toast.error("অনুগ্রহ করে ইউজারনেম এবং পাসওয়ার্ড প্রদান করুন।")
       return
     }
 
-    // Default admin validation: admin/123456 or admin@ghjs.edu.bd/123456
-    const isAdmin = (username.toLowerCase() === "admin" || username.toLowerCase() === "admin@ghjs.edu.bd") && password === "123456"
-    // Student validation: student/123456
-    const isStudent = username.toLowerCase() === "student" && password === "123456"
-    // Teacher validation: teacher/123456
-    const isTeacher = username.toLowerCase() === "teacher" && password === "123456"
-
-    if (isAdmin || isStudent || isTeacher || password === "123456") {
-      let role: "admin" | "student" | "teacher" = "admin"
-      if (isStudent) role = "student"
-      else if (isTeacher) role = "teacher"
-
-      loginUser(role, username)
-
-      toast.success("লগইন সফল হয়েছে! ড্যাশবোর্ডে রিডাইরেক্ট করা হচ্ছে...")
-      setTimeout(() => {
-        router.push("/")
-      }, 1000)
-    } else {
-      toast.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! সঠিক পাসওয়ার্ডটি হলো: 123456")
+    // Try backend authentication first (if API exists)
+    const attemptBackend = async () => {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        })
+        if (res.ok) {
+          const data = await res.json()
+          // expected: { success: true, role: 'admin'|'student'|'teacher', token: '...', userId: '...' }
+          const role = data.role as 'admin' | 'student' | 'teacher'
+          const token = data.token || ''
+          const userId = data.userId || ''
+          loginUser(role, username, token, userId)
+          toast.success('লক্সইন সফল হয়েছে! রিডাইরেক্ট করা হচ্ছে...')
+          // redirect based on role
+          if (role === 'admin') router.push('/admin/dashboard')
+          else if (role === 'teacher') router.push('/teacher/dashboard')
+          else router.push('/student/dashboard')
+          return true
+        }
+      } catch (err) {
+        console.warn('Backend auth failed or not available', err)
+      }
+      return false
     }
+
+    ;(async () => {
+      const backendWorked = await attemptBackend()
+      if (backendWorked) return
+
+      // Fallback to local mock credentials
+      const isAdmin = (username.toLowerCase() === "admin" || username.toLowerCase() === "admin@ghjs.edu.bd") && password === "123456"
+      const isStudent = username.toLowerCase() === "student" && password === "123456"
+      const isTeacher = username.toLowerCase() === "teacher" && password === "123456"
+
+      if (isAdmin || isStudent || isTeacher || password === "123456") {
+        let role: "admin" | "student" | "teacher" = "admin"
+        if (isStudent) role = "student"
+        else if (isTeacher) role = "teacher"
+
+        // no backend token available in mock mode
+        // provide a fallback userId for students/teachers using sample data
+        let fallbackUserId = ''
+        if (role === 'student') {
+          const s = useSchoolStore.getState().students?.[0]
+          fallbackUserId = s?.id || ''
+        }
+        if (role === 'teacher') {
+          // pick first employee as teacher fallback
+          const e = useSchoolStore.getState().employees?.[0]
+          fallbackUserId = e?.id || ''
+        }
+        loginUser(role, username, '', fallbackUserId)
+
+        toast.success("লগইন সফল হয়েছে! রিডাইরেক্ট করা হচ্ছে...")
+        setTimeout(() => {
+          if (role === 'admin') router.push('/admin/dashboard')
+          else if (role === 'teacher') router.push('/teacher/dashboard')
+          else router.push('/student/dashboard')
+        }, 500)
+      } else {
+        toast.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! সঠিক পাসওয়ার্ডটি হলো: 123456")
+      }
+    })()
   }
 
   const handleQuickLogin = (role: "admin" | "student" | "teacher") => {
@@ -126,6 +171,14 @@ export default function LoginPage() {
               <MonitorPlay size={20} />
               <span>শিক্ষক লগইন</span>
             </Button>
+          </div>
+
+          <div className="mt-4 text-center">
+            <Link href="/staff/login">
+              <Button variant="secondary" className="px-4 py-2">
+                শিক্ষক প্যানেলে লগইন করুন
+              </Button>
+            </Link>
           </div>
         </form>
         

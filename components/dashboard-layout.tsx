@@ -41,9 +41,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-background">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-      <div className={`transition-all duration-300 ${collapsed ? "pl-16" : "pl-64"}`}>
+      <div className={`transition-all duration-300 ${collapsed ? "pl-16" : "pl-64"} print:pl-0`}>
         <Header />
-        <main className="p-6">{children}</main>
+        <main className="p-6 print:p-0">{children}</main>
       </div>
     </div>
   )

@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { useSchoolStore, type Student } from "@/lib/store"
-import { Plus, Search, Edit, Trash2, Eye, IdCard, Download, User, Users } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Eye, IdCard, Download, User, Users, FileText, Printer } from "lucide-react"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { IdCardFront, IdCardBack } from "@/components/id-card-template"
@@ -55,8 +55,13 @@ export default function StudentsPage() {
     name: "",
     nameEn: "",
     fatherName: "",
+    fatherNid: "",
+    fatherDob: "",
     motherName: "",
+    motherNid: "",
+    motherDob: "",
     guardianPhone: "",
+    motherPhone: "",
     dateOfBirth: "",
     gender: "male",
     bloodGroup: "",
@@ -79,8 +84,13 @@ export default function StudentsPage() {
       name: "",
       nameEn: "",
       fatherName: "",
+      fatherNid: "",
+      fatherDob: "",
       motherName: "",
+      motherNid: "",
+      motherDob: "",
       guardianPhone: "",
+      motherPhone: "",
       dateOfBirth: "",
       gender: "male",
       bloodGroup: "",
@@ -116,8 +126,13 @@ export default function StudentsPage() {
       name: student.name,
       nameEn: student.nameEn,
       fatherName: student.fatherName,
+      fatherNid: student.fatherNid || "",
+      fatherDob: student.fatherDob || "",
       motherName: student.motherName,
+      motherNid: student.motherNid || "",
+      motherDob: student.motherDob || "",
       guardianPhone: student.guardianPhone,
+      motherPhone: student.motherPhone || "",
       dateOfBirth: student.dateOfBirth,
       gender: student.gender,
       bloodGroup: student.bloodGroup,
@@ -149,21 +164,39 @@ export default function StudentsPage() {
 
   const downloadIdCard = async () => {
     if (idCardRef.current) {
-      const canvas = await html2canvas(idCardRef.current, { scale: 2 })
-      const imgData = canvas.toDataURL("image/png")
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: [54, 86],
-      })
-      pdf.addImage(imgData, "PNG", 0, 0, 54, 86)
-      pdf.save(`ID_Card_${viewingStudent?.registrationNo}.pdf`)
+      const oldIsGenerating = isGeneratingPdf;
+      setIsGeneratingPdf(true);
+      try {
+        const canvas = await html2canvas(idCardRef.current, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        })
+        const imgData = canvas.toDataURL("image/png")
+
+        const pdfWidth = (canvas.width * 25.4) / (96 * 3);
+        const pdfHeight = (canvas.height * 25.4) / (96 * 3);
+
+        const pdf = new jsPDF({
+          orientation: pdfWidth > pdfHeight ? "landscape" : "portrait",
+          unit: "mm",
+          format: [pdfWidth, pdfHeight],
+        })
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
+        pdf.save(`ID_Card_${viewingStudent?.registrationNo || viewingStudent?.name}.pdf`)
+      } catch (err) {
+        console.error("Failed to generate PDF:", err);
+        window.print();
+      } finally {
+        setIsGeneratingPdf(oldIsGenerating);
+      }
     }
   }
 
   const downloadClassIdCards = async () => {
     if (!classIdCardsRef.current) return
-    
+
     setIsGeneratingPdf(true)
     try {
       const pages = classIdCardsRef.current.querySelectorAll('.a4-page')
@@ -177,13 +210,13 @@ export default function StudentsPage() {
 
       for (let i = 0; i < pages.length; i++) {
         if (i > 0) pdf.addPage()
-        
-        const canvas = await html2canvas(pages[i] as HTMLElement, { 
+
+        const canvas = await html2canvas(pages[i] as HTMLElement, {
           scale: 2,
           useCORS: true,
           logging: false
         })
-        
+
         const imgData = canvas.toDataURL("image/png")
         // A4 size is 210 x 297 mm
         pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
@@ -202,12 +235,12 @@ export default function StudentsPage() {
     (s) => selectedClassForId === "all" || s.classId === selectedClassForId
   )
 
-  // Calculate A4 pages (9 cards per page: 3 columns x 3 rows)
-  const cardsPerPage = 9
-  const pageCount = Math.ceil(classStudentsForId.length / cardsPerPage)
-  const a4Pages = Array.from({ length: pageCount }, (_, i) => 
-    classStudentsForId.slice(i * cardsPerPage, (i + 1) * cardsPerPage)
-  )
+  // Calculate A4 pages (4 students = 8 cards per page)
+  const studentsPerPage = 4
+  const pageCount = Math.ceil(classStudentsForId.length / studentsPerPage)
+  const a4Pages = (isClassIdCardOpen || isGeneratingPdf) ? Array.from({ length: pageCount }, (_, i) =>
+    classStudentsForId.slice(i * studentsPerPage, (i + 1) * studentsPerPage)
+  ) : []
 
   const filteredStudents = students.filter((student) => {
     const matchesSearch =
@@ -235,6 +268,10 @@ export default function StudentsPage() {
             <p className="text-muted-foreground">সকল শিক্ষার্থীর তথ্য পরিচালনা করুন</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.location.href = '/students/print-list'} className="flex items-center gap-2">
+              <Printer className="h-4 w-4" />
+              তালিকা প্রিন্ট
+            </Button>
             <Button variant="outline" onClick={() => setIsClassIdCardOpen(true)} className="flex items-center gap-2">
               <IdCard className="h-4 w-4" />
               শ্রেণিভিত্তিক আইডি কার্ড
@@ -246,232 +283,289 @@ export default function StudentsPage() {
                   নতুন শিক্ষার্থী ভর্তি
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingStudent ? "শিক্ষার্থী তথ্য সম্পাদনা" : "নতুন শিক্ষার্থী ভর্তি ফরম"}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-4 py-4">
-                <div className="space-y-2">
-                  <Label>নাম (বাংলা) *</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="শিক্ষার্থীর নাম বাংলায়"
-                  />
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingStudent ? "শিক্ষার্থী তথ্য সম্পাদনা" : "নতুন শিক্ষার্থী ভর্তি ফরম"}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  <div className="space-y-2">
+                    <Label>নাম (বাংলা) *</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="শিক্ষার্থীর নাম বাংলায়"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Name (English) *</Label>
+                    <Input
+                      value={formData.nameEn}
+                      onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
+                      placeholder="Student name in English"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>পিতার নাম *</Label>
+                    <Input
+                      required
+                      value={formData.fatherName}
+                      onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
+                      placeholder="পিতার নাম"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>পিতার এনআইডি / NID</Label>
+                    <Input
+                      value={formData.fatherNid}
+                      onChange={(e) => setFormData({ ...formData, fatherNid: e.target.value })}
+                      placeholder="পিতার এনআইডি নম্বর"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>পিতার জন্ম তারিখ</Label>
+                    <Input
+                      type="date"
+                      value={formData.fatherDob}
+                      onChange={(e) => setFormData({ ...formData, fatherDob: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>মাতার নাম *</Label>
+                    <Input
+                      required
+                      value={formData.motherName}
+                      onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
+                      placeholder="মাতার নাম"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>মাতার এনআইডি / NID</Label>
+                    <Input
+                      value={formData.motherNid}
+                      onChange={(e) => setFormData({ ...formData, motherNid: e.target.value })}
+                      placeholder="মাতার এনআইডি নম্বর"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>মাতার জন্ম তারিখ</Label>
+                    <Input
+                      type="date"
+                      value={formData.motherDob}
+                      onChange={(e) => setFormData({ ...formData, motherDob: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>পিতার মোবাইল *</Label>
+                    <Input
+                      value={formData.guardianPhone}
+                      onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>মাতার মোবাইল</Label>
+                    <Input
+                      value={formData.motherPhone}
+                      onChange={(e) => setFormData({ ...formData, motherPhone: e.target.value })}
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>জন্ম তারিখ *</Label>
+                    <Input
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>লিঙ্গ</Label>
+                    <Select
+                      value={formData.gender}
+                      onValueChange={(v) => setFormData({ ...formData, gender: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">পুরুষ</SelectItem>
+                        <SelectItem value="female">মহিলা</SelectItem>
+                        <SelectItem value="other">অন্যান্য</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>রক্তের গ্রুপ</Label>
+                    <Select
+                      value={formData.bloodGroup}
+                      onValueChange={(v) => setFormData({ ...formData, bloodGroup: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="নির্বাচন করুন" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A+">A+</SelectItem>
+                        <SelectItem value="A-">A-</SelectItem>
+                        <SelectItem value="B+">B+</SelectItem>
+                        <SelectItem value="B-">B-</SelectItem>
+                        <SelectItem value="AB+">AB+</SelectItem>
+                        <SelectItem value="AB-">AB-</SelectItem>
+                        <SelectItem value="O+">O+</SelectItem>
+                        <SelectItem value="O-">O-</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>ধর্ম</Label>
+                    <Select
+                      value={formData.religion}
+                      onValueChange={(v) => setFormData({ ...formData, religion: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Islam">ইসলাম</SelectItem>
+                        <SelectItem value="Hindu">হিন্দু</SelectItem>
+                        <SelectItem value="Christian">খ্রিস্টান</SelectItem>
+                        <SelectItem value="Buddhist">বৌদ্ধ</SelectItem>
+                        <SelectItem value="Other">অন্যান্য</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>শিক্ষার্থীর জন্ম নিবন্ধন নম্বর *</Label>
+                    <Input
+                      required
+                      value={formData.nidOrBirthCert}
+                      onChange={(e) => setFormData({ ...formData, nidOrBirthCert: e.target.value })}
+                      placeholder="জন্ম নিবন্ধন নম্বর"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>শ্রেণি *</Label>
+                    <Select
+                      value={formData.classId}
+                      onValueChange={(v) => setFormData({ ...formData, classId: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="শ্রেণি নির্বাচন করুন" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classes.map((cls) => (
+                          <SelectItem key={cls.id} value={cls.id}>
+                            {cls.name} ({cls.section})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>সেকশন</Label>
+                    <Select
+                      value={formData.section}
+                      onValueChange={(v) => setFormData({ ...formData, section: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A">A</SelectItem>
+                        <SelectItem value="B">B</SelectItem>
+                        <SelectItem value="C">C</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>রোল নম্বর *</Label>
+                    <Input
+                      type="number"
+                      value={formData.roll}
+                      onChange={(e) => setFormData({ ...formData, roll: parseInt(e.target.value) || 1 })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>রেজিস্ট্রেশন নম্বর</Label>
+                    <Input
+                      value={formData.registrationNo}
+                      onChange={(e) => setFormData({ ...formData, registrationNo: e.target.value })}
+                      placeholder="2024XXXXXX"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>ভর্তির তারিখ</Label>
+                    <Input
+                      type="date"
+                      value={formData.admissionDate}
+                      onChange={(e) => setFormData({ ...formData, admissionDate: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>পূর্ববর্তী স্কুল</Label>
+                    <Input
+                      value={formData.previousSchool}
+                      onChange={(e) => setFormData({ ...formData, previousSchool: e.target.value })}
+                      placeholder="পূর্ববর্তী শিক্ষা প্রতিষ্ঠান"
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label>ঠিকানা</Label>
+                    <Textarea
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      placeholder="সম্পূর্ণ ঠিকানা লিখুন"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>ছবি আপলোড</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, photo: reader.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {formData.photo && (
+                      <div className="mt-2">
+                        <img src={formData.photo} alt="Preview" className="w-24 h-24 object-cover rounded-md border" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>স্ট্যাটাস</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(v: "active" | "inactive") => setFormData({ ...formData, status: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">সক্রিয়</SelectItem>
+                        <SelectItem value="inactive">নিষ্ক্রিয়</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Name (English) *</Label>
-                  <Input
-                    value={formData.nameEn}
-                    onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
-                    placeholder="Student name in English"
-                  />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsAddOpen(false)}>
+                    বাতিল
+                  </Button>
+                  <Button onClick={handleSubmit}>
+                    {editingStudent ? "আপডেট করুন" : "ভর্তি করুন"}
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label>পিতার নাম *</Label>
-                  <Input
-                    value={formData.fatherName}
-                    onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
-                    placeholder="পিতার নাম"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>মাতার নাম *</Label>
-                  <Input
-                    value={formData.motherName}
-                    onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
-                    placeholder="মাতার নাম"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>অভিভাবকের মোবাইল *</Label>
-                  <Input
-                    value={formData.guardianPhone}
-                    onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
-                    placeholder="01XXXXXXXXX"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>জন্ম তারিখ *</Label>
-                  <Input
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>লিঙ্গ</Label>
-                  <Select
-                    value={formData.gender}
-                    onValueChange={(v) => setFormData({ ...formData, gender: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">পুরুষ</SelectItem>
-                      <SelectItem value="female">মহিলা</SelectItem>
-                      <SelectItem value="other">অন্যান্য</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>রক্তের গ্রুপ</Label>
-                  <Select
-                    value={formData.bloodGroup}
-                    onValueChange={(v) => setFormData({ ...formData, bloodGroup: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="নির্বাচন করুন" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>ধর্ম</Label>
-                  <Select
-                    value={formData.religion}
-                    onValueChange={(v) => setFormData({ ...formData, religion: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Islam">ইসলাম</SelectItem>
-                      <SelectItem value="Hindu">হিন্দু</SelectItem>
-                      <SelectItem value="Christian">খ্রিস্টান</SelectItem>
-                      <SelectItem value="Buddhist">বৌদ্ধ</SelectItem>
-                      <SelectItem value="Other">অন্যান্য</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>জন্ম নিবন্ধন / NID নং</Label>
-                  <Input
-                    value={formData.nidOrBirthCert}
-                    onChange={(e) => setFormData({ ...formData, nidOrBirthCert: e.target.value })}
-                    placeholder="জন্ম নিবন্ধন নম্বর"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>শ্রেণি *</Label>
-                  <Select
-                    value={formData.classId}
-                    onValueChange={(v) => setFormData({ ...formData, classId: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="শ্রেণি নির্বাচন করুন" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {classes.map((cls) => (
-                        <SelectItem key={cls.id} value={cls.id}>
-                          {cls.name} ({cls.section})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>সেকশন</Label>
-                  <Select
-                    value={formData.section}
-                    onValueChange={(v) => setFormData({ ...formData, section: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A">A</SelectItem>
-                      <SelectItem value="B">B</SelectItem>
-                      <SelectItem value="C">C</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>রোল নম্বর *</Label>
-                  <Input
-                    type="number"
-                    value={formData.roll}
-                    onChange={(e) => setFormData({ ...formData, roll: parseInt(e.target.value) || 1 })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>রেজিস্ট্রেশন নম্বর</Label>
-                  <Input
-                    value={formData.registrationNo}
-                    onChange={(e) => setFormData({ ...formData, registrationNo: e.target.value })}
-                    placeholder="2024XXXXXX"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>ভর্তির তারিখ</Label>
-                  <Input
-                    type="date"
-                    value={formData.admissionDate}
-                    onChange={(e) => setFormData({ ...formData, admissionDate: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>পূর্ববর্তী স্কুল</Label>
-                  <Input
-                    value={formData.previousSchool}
-                    onChange={(e) => setFormData({ ...formData, previousSchool: e.target.value })}
-                    placeholder="পূর্ববর্তী শিক্ষা প্রতিষ্ঠান"
-                  />
-                </div>
-                <div className="space-y-2 col-span-2">
-                  <Label>ঠিকানা</Label>
-                  <Textarea
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    placeholder="সম্পূর্ণ ঠিকানা লিখুন"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>ছবি (URL)</Label>
-                  <Input
-                    value={formData.photo}
-                    onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                    placeholder="ছবির URL দিন"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>স্ট্যাটাস</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(v: "active" | "inactive") => setFormData({ ...formData, status: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">সক্রিয়</SelectItem>
-                      <SelectItem value="inactive">নিষ্ক্রিয়</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                  বাতিল
-                </Button>
-                <Button onClick={handleSubmit}>
-                  {editingStudent ? "আপডেট করুন" : "ভর্তি করুন"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -597,6 +691,9 @@ export default function StudentsPage() {
                         <Button variant="ghost" size="icon" onClick={() => handleIdCard(student)} title="আইডি কার্ড">
                           <IdCard className="h-4 w-4" />
                         </Button>
+                        <Button variant="ghost" size="icon" onClick={() => window.location.href = `/students/admission-letter?studentId=${student.id}`} title="ভর্তির ছাড়পত্র">
+                          <FileText className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(student)} title="সম্পাদনা">
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -698,14 +795,21 @@ export default function StudentsPage() {
               <div className="space-y-4">
                 <div
                   ref={idCardRef}
-                  className="mx-auto"
-                  style={{ width: "216px" }}
+                  className="mx-auto flex gap-4 bg-white p-2"
+                  style={{ width: "fit-content" }}
                 >
                   <IdCardFront student={viewingStudent} variant={viewingStudent.gender === 'female' ? 'red' : 'blue'} />
+                  <IdCardBack student={viewingStudent} variant={viewingStudent.gender === 'female' ? 'red' : 'blue'} />
                 </div>
-                <Button onClick={downloadIdCard} className="w-full">
-                  <Download className="mr-2 h-4 w-4" />
-                  PDF ডাউনলোড করুন
+                <Button onClick={downloadIdCard} className="w-full print:hidden" disabled={isGeneratingPdf}>
+                  {isGeneratingPdf ? (
+                    "PDF তৈরি হচ্ছে..."
+                  ) : (
+                    <>
+                      <Download className="mr-2 h-4 w-4" />
+                      PDF ডাউনলোড করুন
+                    </>
+                  )}
                 </Button>
               </div>
             )}
@@ -718,7 +822,7 @@ export default function StudentsPage() {
             <DialogHeader>
               <DialogTitle>শ্রেণিভিত্তিক আইডি কার্ড তৈরি</DialogTitle>
             </DialogHeader>
-            
+
             <div className="flex items-center gap-4 py-4 border-b">
               <div className="flex-1">
                 <Label>শ্রেণি নির্বাচন করুন</Label>
@@ -737,8 +841,8 @@ export default function StudentsPage() {
                 </Select>
               </div>
               <div className="flex items-end pb-0.5">
-                <Button 
-                  onClick={downloadClassIdCards} 
+                <Button
+                  onClick={downloadClassIdCards}
                   disabled={classStudentsForId.length === 0 || isGeneratingPdf}
                   className="w-48"
                 >
@@ -763,32 +867,17 @@ export default function StudentsPage() {
                 <div className="flex flex-col items-center gap-8 pb-8" ref={classIdCardsRef}>
                   {a4Pages.map((pageStudents, pageIndex) => (
                     <div key={`page-${pageIndex}`} className="flex flex-col gap-8">
-                      {/* Fronts Page */}
-                      <div 
+                      {/* Combined Front & Back Page */}
+                      <div
                         className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
                         style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
                       >
-                        <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 1} - Fronts</div>
+                        <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex + 1}</div>
                         <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4">
-                          {pageStudents.map(student => (
-                            <IdCardFront key={`front-${student.id}`} student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />
-                          ))}
-                        </div>
-                      </div>
-                      
-                      {/* Backs Page */}
-                      <div 
-                        className="a4-page bg-white shadow-md mx-auto relative p-[10mm]"
-                        style={{ width: "210mm", height: "297mm", boxSizing: "border-box" }}
-                      >
-                        <div className="absolute top-2 left-0 w-full text-center text-[10px] text-slate-400">Page {pageIndex * 2 + 2} - Backs</div>
-                        <div className="grid grid-cols-3 gap-[5mm] place-items-center h-full content-start pt-4" style={{ direction: 'rtl' }}>
-                          {/* We reverse the row order (using rtl and compensating) so fronts and backs align perfectly when printed double-sided */}
-                          {pageStudents.map(student => (
-                            <div key={`back-${student.id}`} style={{ direction: 'ltr' }}>
-                              <IdCardBack student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />
-                            </div>
-                          ))}
+                          {pageStudents.flatMap(student => [
+                            <IdCardFront key={`front-${student.id}`} student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />,
+                            <IdCardBack key={`back-${student.id}`} student={student} variant={student.gender === 'female' ? 'red' : 'blue'} />
+                          ])}
                         </div>
                       </div>
                     </div>
@@ -796,9 +885,9 @@ export default function StudentsPage() {
                 </div>
               )}
             </div>
-            
+
             <div className="text-xs text-muted-foreground pt-2">
-              * নোট: PDF জেনারেট হতে কিছু সময় লাগতে পারে। 
+              * নোট: PDF জেনারেট হতে কিছু সময় লাগতে পারে।
               <br />* ব্যাক পেজগুলো এমনভাবে সাজানো হয়েছে যাতে ডাবল-সাইডেড প্রিন্ট করলে সামনের কার্ডের ঠিক পেছনেই সঠিক ব্যাক পেজ থাকে।
             </div>
           </DialogContent>

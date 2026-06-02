@@ -25,8 +25,28 @@ export default function InstituteProfilePage() {
   }
 
   const handleSave = () => {
-    updateInstituteProfile(formData)
-    toast.success("Institute profile saved successfully!")
+    try {
+      if (!formData) {
+        toast.error("No data to save")
+        console.warn('InstituteProfile: handleSave called but formData is empty')
+        return
+      }
+      console.log('InstituteProfile: saving', formData)
+      updateInstituteProfile(formData)
+      // quick check of localStorage persistence key used by zustand persist
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = localStorage.getItem('school-management-store')
+          console.log('localStorage[school-management-store] (truncated):', stored ? stored.slice(0, 200) : null)
+        } catch (e) {
+          console.error('localStorage read failed', e)
+        }
+      }
+      toast.success("Institute profile saved successfully!")
+    } catch (err) {
+      console.error('InstituteProfile: save failed', err)
+      toast.error('Failed to save institute profile')
+    }
   }
 
   if (!mounted) return null
